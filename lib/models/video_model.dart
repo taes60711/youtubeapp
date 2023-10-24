@@ -11,12 +11,12 @@ class Video {
     required this.channelTitle,
   });
 
-  factory Video.fromMap(Map<String, dynamic> snippet) {
+  factory Video.fromMap(Map<String, dynamic> json) {
     return Video(
-      id: snippet['resourceId']['videoId'],
-      title: snippet['title'],
-      thumbnailUrl: snippet['thumbnails']['high']['url'],
-      channelTitle: snippet['channelTitle'],
+      id: json['id']['videoId'],
+      title: json['snippet']['title'],
+      thumbnailUrl: json['snippet']['thumbnails']['high']['url'],
+      channelTitle: json['snippet']['channelTitle'],
     );
   }
 }

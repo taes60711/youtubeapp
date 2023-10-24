@@ -3,6 +3,7 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:youtubeapp/service/YTService.dart';
 
 import 'models/channel_model.dart';
+import 'models/video_model.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -32,56 +33,69 @@ class _HomeState extends State<Home> {
     "7HDeem-JaSY",
   ];
 
+  List<Video> _videoInfo = [];
+
   @override
   void initState() {
     super.initState();
     _controller.loadVideoById(videoId: _videoIds[1]);
   }
 
-  Future<List<String>> searchVideo() async {
-    List<String> tmpVideos =
+  Future<List<Video>> searchVideo() async {
+    List<Video> tmpVideos =
         await YTService.instance.searchVideosFromKeyWord(keyword: _text);
-    setState(() {
-      _videoIds = tmpVideos;
-    });
     return tmpVideos;
   }
 
   @override
   Widget build(BuildContext context) {
     print("Home Start");
-
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      child: Column(
-        children: [
-          TextField(
-              decoration: const InputDecoration(
-                hintText: 'Enter a search term',
-              ),
-              onChanged: ((value) {
-                setState(() {
-                  _text = value;
-                });
-              })),
-          ElevatedButton(
-            child: const Text('Search'),
-            onPressed: () async => {
-              _controller.pauseVideo(),
-              await searchVideo().then((value) {
-                _controller.loadVideoById(videoId: value[1]);
-              }),
-            },
-          ),
-          ElevatedButton(
-            child: const Text('play'),
-            onPressed: () async => {_controller.playVideo()},
-          ),
-          Text(_videoIds.toString()),
-          YoutubePlayer(controller: _controller)
-        ],
-      ),
-    );
+    return (Column(
+      children: [
+        TextField(
+            decoration: const InputDecoration(
+              hintText: 'Enter a search term',
+            ),
+            onChanged: ((value) {
+              setState(() {
+                _text = value;
+              });
+            })),
+        ElevatedButton(
+          child: const Text('Search'),
+          onPressed: () async => {
+            await searchVideo().then((value) {
+              setState(() {
+                _videoInfo = value;
+              });
+            }),
+          },
+        ),
+        YoutubePlayer(controller: _controller),
+        Expanded(
+            child: ListView.builder(
+          itemCount: _videoInfo.length,
+          itemBuilder: (context, index) {
+            return Row(
+              children: [
+                SizedBox(
+                  width: 150,
+                  height: 150,
+                  child: Image.network(_videoInfo[index].thumbnailUrl),
+                ),
+                Expanded(
+                  child: ElevatedButton(
+                    child: Text(_videoInfo[index].title),
+                    onPressed: () => {
+                      _controller.loadVideoById(videoId: _videoInfo[index].id)
+                    },
+                  ),
+                )
+              ],
+            );
+          },
+        ))
+      ],
+    ));
   }
 }

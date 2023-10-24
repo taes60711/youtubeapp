@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: Text('Youtube'),
         ),
-        body: Home(),
+        body: const Home(),
       ),
     );
   }
