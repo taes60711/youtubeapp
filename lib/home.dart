@@ -31,19 +31,15 @@ class _HomeState extends State<Home> {
       playsInline: false,
     ),
   );
-  final List<String> _videoIds = [
-    "tc96cx9uvAU",
-    "D7dzSapaIS4",
-  ];
+
   List<YoutubeVideo> _videoInfo = [];
   YoutubeVideo? selectedVideo;
   final IsLoadController _loadingController = IsLoadController.initialize();
-  final ScrollController _scrollController = ScrollController();
-
+  late final ScrollController _scrollController;
   @override
   void initState() {
     super.initState();
-    _controller.loadVideoById(videoId: _videoIds[0]);
+    _scrollController = ScrollController();
   }
 
   Future<List<YoutubeVideo>> searchVideo() async {
@@ -59,7 +55,7 @@ class _HomeState extends State<Home> {
         height: 50,
         width: 50,
         child: CircularProgressIndicator(
-          strokeWidth: 8,
+          strokeWidth: 5,
           backgroundColor: Colors.black26,
           color: Colors.black26,
         ),
