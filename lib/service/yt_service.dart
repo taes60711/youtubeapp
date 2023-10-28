@@ -1,5 +1,4 @@
 // ignore_for_file: avoid_print, avoid_function_literals_in_foreach_calls
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -47,7 +46,6 @@ class YTService {
     }
   }
 
-//YoutubeVideo videoInfo, String inputFileType
   Future ytDownloader(YoutubeVideo videoInfo, String inputFileType) async {
     print("youtubeDownload start");
     var yt = YoutubeExplode();
@@ -63,20 +61,22 @@ class YTService {
       fileType = "mp4";
       streamInfo = streamManifest.muxed.withHighestBitrate();
     }
+    final int fileSize = streamInfo.size.totalBytes;
 
-    print("streamInfo ${streamInfo}");
+    print("streamInfo ${streamInfo} size: ${fileSize}");
     var stream = yt.videos.streamsClient.get(streamInfo);
-
     if (stream != null) {
-      final appDocDir = '/storage/emulated/0/Download'; //await getDownloadsDirectory();
-      // await ExternalPath.getExternalStoragePublicDirectory(
-      //     ExternalPath.DIRECTORY_DOWNLOADS);
-      var file = File("${appDocDir}/${videoInfo.title}.$fileType");
-      print(file);
-      var fileStream = file.openWrite();
-
-      await stream.pipe(fileStream);
-      print("Download Sucessfull");
+      const path = '/storage/emulated/0/Download';
+      var filePath = File("${path}/${videoInfo.title}.$fileType");
+      print(filePath);
+      try {
+        var fileStream = filePath.openWrite();
+        print(fileStream);
+        await stream.pipe(fileStream);
+        print("Download Sucessfull");
+      } catch (e) {
+        print(e);
+      }
     }
   }
 }

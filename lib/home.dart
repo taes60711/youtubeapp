@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-// import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 import 'models/video_model.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -23,7 +22,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   String _text = "";
   final YoutubePlayerController _controller = YoutubePlayerController(
-    initialVideoId: '',
+    initialVideoId: 'Nt1bCK9Aj1k',
     flags: const YoutubePlayerFlags(
       autoPlay: false,
       mute: false,
