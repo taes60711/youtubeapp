@@ -7,7 +7,7 @@ class Channel {
   final String subscriberCount;
   final String videoCount;
   final String uploadPlaylistId;
-  List<Video> videos;
+  List<YoutubeVideo> videos;
 
   Channel({
     required this.id,

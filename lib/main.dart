@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Youtube'),
+          title: const Text('Youtube'),
         ),
         body: const Home(),
       ),
