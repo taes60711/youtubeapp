@@ -1,9 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+// import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 import 'models/video_model.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class IsLoadController {
   bool videoList;
@@ -22,24 +22,21 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   String _text = "";
-  late final YoutubePlayerController _controller = YoutubePlayerController(
-    params: const YoutubePlayerParams(
-      showControls: true,
+  final YoutubePlayerController _controller = YoutubePlayerController(
+    initialVideoId: '',
+    flags: const YoutubePlayerFlags(
+      autoPlay: false,
       mute: false,
-      showFullscreenButton: true,
-      loop: false,
-      playsInline: false,
     ),
   );
 
   List<YoutubeVideo> _videoInfo = [];
   YoutubeVideo? selectedVideo;
   final IsLoadController _loadingController = IsLoadController.initialize();
-  late final ScrollController _scrollController;
+  late final ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
   }
 
   Future<List<YoutubeVideo>> searchVideo() async {
@@ -130,7 +127,7 @@ class _HomeState extends State<Home> {
               ),
               onPressed: () {
                 setState(() => selectedVideo = videoInfo);
-                _controller.loadVideoById(videoId: videoInfo.id);
+                _controller.load(videoInfo.id);
               },
             )
           : SizedBox(

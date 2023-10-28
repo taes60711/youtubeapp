@@ -5,9 +5,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../models/video_model.dart';
 import '../utilities/keys.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
-import 'package:external_path/external_path.dart';
 
 class YTService {
   YTService._instantiate();
