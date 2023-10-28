@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:youtubeapp/service/yt_service.dart';
@@ -14,7 +16,6 @@ class IsLoadController {
 
 class Home extends StatefulWidget {
   const Home({super.key});
-
   @override
   State<Home> createState() => _HomeState();
 }
@@ -37,6 +38,7 @@ class _HomeState extends State<Home> {
   List<YoutubeVideo> _videoInfo = [];
   YoutubeVideo? selectedVideo;
   final IsLoadController _loadingController = IsLoadController.initialize();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -50,122 +52,161 @@ class _HomeState extends State<Home> {
     return tmpVideos;
   }
 
+  Widget loadingWidget() {
+    return const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: SizedBox(
+        height: 50,
+        width: 50,
+        child: CircularProgressIndicator(
+          strokeWidth: 8,
+          backgroundColor: Colors.black26,
+          color: Colors.black26,
+        ),
+      ),
+    );
+  }
+
+  Widget downloaderButton(String text, String downloadType) {
+    return ElevatedButton(
+      child: Text(text),
+      onPressed: () async => {
+        setState(() => _loadingController.download = true),
+        await YTService.instance.ytDownloader(selectedVideo!, downloadType),
+        setState(() => _loadingController.download = false),
+      },
+    );
+  }
+
   Widget downloadButton() {
     if (selectedVideo != null) {
       if (!_loadingController.download) {
         return Column(
           children: [
-            ElevatedButton(
-              child: const Text('Download Mp4'),
-              onPressed: () async => {
-                setState(() {
-                  _loadingController.download = true;
-                }),
-                await YTService.instance.ytDownloader(selectedVideo!, "mp4"),
-                setState(() {
-                  _loadingController.download = false;
-                }),
-              },
-            ),
-            ElevatedButton(
-              child: const Text('Download Mp3'),
-              onPressed: () async => {
-                setState(() {
-                  _loadingController.download = true;
-                }),
-                await YTService.instance.ytDownloader(selectedVideo!, "mp3"),
-                setState(() {
-                  _loadingController.download = false;
-                }),
-              },
-            ),
+            downloaderButton('Download Mp4', "mp4"),
+            downloaderButton('Download Mp3', "mp3"),
           ],
         );
       } else {
-        return const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: SizedBox(
-            height: 50,
-            width: 50,
-            child: CircularProgressIndicator(
-              strokeWidth: 8,
-              backgroundColor: Colors.black26,
-              color: Colors.black26,
-            ),
-          ),
-        );
+        return loadingWidget();
       }
     } else {
       return const Text("");
     }
   }
 
+  Widget listItem(YoutubeVideo videoInfo) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: videoInfo.kind == 'video'
+          ? ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.all(0),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 80,
+                    width: 130,
+                    child: Image(
+                      fit: BoxFit.cover,
+                      image: NetworkImage(videoInfo.thumbnailUrl),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            videoInfo.title,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(videoInfo.channelTitle)
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              onPressed: () {
+                setState(() => selectedVideo = videoInfo);
+                _controller.loadVideoById(videoId: videoInfo.id);
+              },
+            )
+          : SizedBox(
+              height: 80,
+              child: Row(
+                children: [
+                  SizedBox(
+                    height: 80,
+                    width: 130,
+                    child: Center(
+                        child: ClipRRect(
+                      borderRadius: BorderRadius.circular(40),
+                      child: Image(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(videoInfo.thumbnailUrl),
+                      ),
+                    )),
+                  ),
+                  Text(videoInfo.channelTitle)
+                ],
+              ),
+            ),
+    );
+  }
+
   Widget videoListView(bool isLoading) {
-    if (isLoading) {
-      return const Padding(
-        padding: EdgeInsets.all(8.0),
-        child: SizedBox(
-          height: 50,
-          width: 50,
-          child: CircularProgressIndicator(
-            strokeWidth: 8,
-            backgroundColor: Colors.black26,
-            color: Colors.black26,
-          ),
-        ),
-      );
+    if (_videoInfo.isEmpty && isLoading) {
+      return loadingWidget();
     } else {
       return Expanded(
         child: Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: ListView.builder(
-            itemCount: _videoInfo.length,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.all(0),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                          height: 80,
-                          width: 130,
-                          child: Image(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(_videoInfo[index].thumbnailUrl),
-                          )),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.only(top: 8),
+            child: Column(
+              children: [
+                Expanded(
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: (ScrollNotification scrollNotification) {
+                      if (scrollNotification is ScrollEndNotification) {
+                        final before = scrollNotification.metrics.extentBefore;
+                        final max = scrollNotification.metrics.maxScrollExtent;
+                        if (before == max && !_loadingController.videoList) {
+                          setState(() => _loadingController.videoList = true);
+                          searchVideo().then((value) {
+                            setState(() {
+                              _videoInfo.addAll(value);
+                              _loadingController.videoList = false;
+                            });
+                          });
+                        }
+                      }
+                      return false;
+                    },
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: _videoInfo.length,
+                      itemBuilder: (context, index) {
+                        if (index == _videoInfo.length - 1) {
+                          return Column(
                             children: [
-                              Text(
-                                _videoInfo[index].title,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(_videoInfo[index].channelTitle),
+                              listItem(_videoInfo[index]),
+                              _loadingController.videoList ? loadingWidget() : Container()
                             ],
-                          ),
-                        ),
-                      )
-                    ],
+                          );
+                        } else {
+                          return listItem(_videoInfo[index]);
+                        }
+                      },
+                    ),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      selectedVideo = _videoInfo[index];
-                    });
-                    _controller.loadVideoById(videoId: _videoInfo[index].id);
-                  },
                 ),
-              );
-            },
-          ),
-        ),
+              ],
+            )),
       );
     }
   }
@@ -191,9 +232,7 @@ class _HomeState extends State<Home> {
             ElevatedButton(
               child: const Text('Search'),
               onPressed: () async => {
-                setState(() {
-                  _loadingController.videoList = true;
-                }),
+                setState(() => _loadingController.videoList = true),
                 await searchVideo().then((value) {
                   setState(() {
                     _videoInfo = value;

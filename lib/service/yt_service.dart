@@ -7,6 +7,7 @@ import '../models/video_model.dart';
 import '../utilities/keys.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+import 'package:external_path/external_path.dart';
 
 class YTService {
   YTService._instantiate();
@@ -37,58 +38,59 @@ class YTService {
   //   }
   // }
 
-  Future<List<YoutubeVideo>> fetchVideosFromPlaylist({required String playlistId}) async {
-    Map<String, String> parameters = {
-      'part': 'snippet',
-      'playlistId': playlistId,
-      'maxResults': '8',
-      'pageToken': _nextPageToken,
-      'key': API_KEY,
-    };
-    Uri uri = Uri.https(_baseUrl, '/youtube/v3/playlistItems', parameters);
+  // Future<List<YoutubeVideo>> fetchVideosFromPlaylist({required String playlistId}) async {
+  //   Map<String, String> parameters = {
+  //     'part': 'snippet',
+  //     'playlistId': playlistId,
+  //     'maxResults': '8',
+  //     'pageToken': _nextPageToken,
+  //     'key': API_KEY,
+  //   };
+  //   Uri uri = Uri.https(_baseUrl, '/youtube/v3/playlistItems', parameters);
 
-    // Get Playlist Videos
-    var response = await http.get(uri);
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      _nextPageToken = data['nextPageToken'] ?? '';
+  //   // Get Playlist Videos
+  //   var response = await http.get(uri);
+  //   if (response.statusCode == 200) {
+  //     var data = json.decode(response.body);
+  //     _nextPageToken = data['nextPageToken'] ?? '';
 
-      List<dynamic> videosJson = data['items'];
+  //     List<dynamic> videosJson = data['items'];
 
-      List<YoutubeVideo> videos = [];
-      videosJson.forEach(
-        (json) => videos.add(YoutubeVideo.fromMap(json['snippet'])),
-      );
-      return videos;
-    } else {
-      throw json.decode(response.body)['error']['message'];
-    }
-  }
+  //     List<YoutubeVideo> videos = [];
+  //     videosJson.forEach(
+  //       (json) => videos.add(YoutubeVideo.fromMap(json['snippet'])),
+  //     );
+  //     return videos;
+  //   } else {
+  //     throw json.decode(response.body)['error']['message'];
+  //   }
+  // }
 
-//List<Video>
   Future<List<YoutubeVideo>> searchVideosFromKeyWord({required String keyword}) async {
     Map<String, String> parameters = {
       'part': 'snippet',
       'q': keyword,
-      'maxResults': '8',
+      'maxResults': '30',
       'pageToken': _nextPageToken,
       'key': API_KEY,
+      'regionCode': 'TW',
     };
     Uri uri = Uri.https(_baseUrl, '/youtube/v3/search', parameters);
-
-    // Get Playlist Videos
+    print(uri);
     var response = await http.get(uri);
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       _nextPageToken = data['nextPageToken'] ?? '';
-
+      print("data${data}");
       List<dynamic> videosJson = data['items'];
 
       List<YoutubeVideo> videos = [];
 
       videosJson.forEach((json) => {
             if (json['id']['kind'] == "youtube#video")
-              videos.add(YoutubeVideo.fromMap(json)),
+              videos.add(YoutubeVideo.fromMap(json, 'video'))
+            else if (json['id']['kind'] == "youtube#channel")
+              videos.add(YoutubeVideo.fromMap(json, 'channel'))
           });
 
       return videos;
@@ -97,6 +99,7 @@ class YTService {
     }
   }
 
+//YoutubeVideo videoInfo, String inputFileType
   Future ytDownloader(YoutubeVideo videoInfo, String inputFileType) async {
     print("youtubeDownload start");
     var yt = YoutubeExplode();
@@ -104,6 +107,7 @@ class YTService {
     String fileType;
     StreamManifest streamManifest =
         await yt.videos.streamsClient.getManifest(videoInfo.id);
+
     if (inputFileType == "mp3") {
       fileType = inputFileType;
       streamInfo = streamManifest.audioOnly.withHighestBitrate();
@@ -116,8 +120,9 @@ class YTService {
     var stream = yt.videos.streamsClient.get(streamInfo);
 
     if (stream != null) {
-      final appDocDir = await getDownloadsDirectory();
-      var file = File("${appDocDir?.path}/${videoInfo.title}.$fileType");
+      final appDocDir = await ExternalPath.getExternalStoragePublicDirectory(
+          ExternalPath.DIRECTORY_DOWNLOADS);
+      var file = File("${appDocDir}/${videoInfo.title}.$fileType");
       print(file);
       var fileStream = file.openWrite();
 

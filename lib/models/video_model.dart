@@ -1,19 +1,28 @@
 class YoutubeVideo {
+  final String kind;
   final String id;
   final String title;
   final String thumbnailUrl;
   final String channelTitle;
 
   YoutubeVideo({
+    required this.kind,
     required this.id,
     required this.title,
     required this.thumbnailUrl,
     required this.channelTitle,
   });
 
-  factory YoutubeVideo.fromMap(Map<String, dynamic> json) {
+  factory YoutubeVideo.fromMap(Map<String, dynamic> json, String kind) {
+    String id;
+    if (kind == 'video') {
+      id = json['id']['videoId'];
+    } else {
+      id = json['id']['channelId'];
+    }
     return YoutubeVideo(
-      id: json['id']['videoId'],
+      kind: kind,
+      id: id,
       title: json['snippet']['title'],
       thumbnailUrl: json['snippet']['thumbnails']['high']['url'],
       channelTitle: json['snippet']['channelTitle'],
