@@ -1,16 +1,19 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 import 'models/video_model.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-class IsLoadController {
+class IsLoadAndMessageController {
   bool videoList;
   bool download;
-  IsLoadController(this.videoList, this.download);
-  IsLoadController.initialize()
+  String isDlSuc;
+  IsLoadAndMessageController(this.videoList, this.download, this.isDlSuc);
+  IsLoadAndMessageController.initialize()
       : videoList = false,
-        download = false;
+        download = false,
+        isDlSuc = "";
 }
 
 class Home extends StatefulWidget {
@@ -28,11 +31,13 @@ class _HomeState extends State<Home> {
       mute: false,
     ),
   );
-
   List<YoutubeVideo> _videoInfo = [];
   YoutubeVideo? selectedVideo;
-  final IsLoadController _loadingController = IsLoadController.initialize();
+  final IsLoadAndMessageController _loadingController =
+      IsLoadAndMessageController.initialize();
   late final ScrollController _scrollController = ScrollController();
+  final YTService _ytService = YTService.instance;
+
   @override
   void initState() {
     super.initState();
@@ -40,7 +45,7 @@ class _HomeState extends State<Home> {
 
   Future<List<YoutubeVideo>> searchVideo() async {
     List<YoutubeVideo> tmpVideos =
-        await YTService.instance.searchVideosFromKeyWord(keyword: _text);
+        await _ytService.searchVideosFromKeyWord(keyword: _text);
     return tmpVideos;
   }
 
@@ -59,31 +64,45 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget downloaderButton(String text, String downloadType) {
+  Widget dlerButton(String text, String downloadType) {
     return ElevatedButton(
       child: Text(text),
       onPressed: () async => {
         setState(() => _loadingController.download = true),
-        await YTService.instance.ytDownloader(selectedVideo!, downloadType),
-        setState(() => _loadingController.download = false),
+        _loadingController.isDlSuc =
+            await _ytService.ytDownloader(selectedVideo!, downloadType),
+        setState(() {
+          _loadingController.download = false;
+        }),
       },
     );
   }
 
-  Widget downloadButton() {
+  Widget dlMessage(String isDlSuc) {
+    if (isDlSuc == "sucessfull") {
+      return const Text("Dl SuccessFully");
+    } else if (isDlSuc == "fail") {
+      return const Text("Dl Failed");
+    } else {
+      return const SizedBox();
+    }
+  }
+
+  Widget dlButtonView() {
     if (selectedVideo != null) {
       if (!_loadingController.download) {
         return Column(
           children: [
-            downloaderButton('Download Mp4', "mp4"),
-            downloaderButton('Download Mp3', "mp3"),
+            dlerButton('Download Mp4', "mp4"),
+            dlerButton('Download Mp3', "mp3"),
+            dlMessage(_loadingController.isDlSuc),
           ],
         );
       } else {
         return loadingWidget();
       }
     } else {
-      return const Text("");
+      return const SizedBox();
     }
   }
 
@@ -125,6 +144,7 @@ class _HomeState extends State<Home> {
                 ],
               ),
               onPressed: () {
+                _loadingController.isDlSuc = "";
                 setState(() => selectedVideo = videoInfo);
                 _controller.load(videoInfo.id);
               },
@@ -207,6 +227,10 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return (Column(
       children: [
+        Container(
+          height: 61,
+          color: Colors.black,
+        ),
         Row(
           children: [
             Expanded(
@@ -239,7 +263,7 @@ class _HomeState extends State<Home> {
           padding: const EdgeInsets.only(top: 8),
           child: YoutubePlayer(controller: _controller),
         ),
-        downloadButton(),
+        dlButtonView(),
         videoListView(_loadingController.videoList),
       ],
     ));

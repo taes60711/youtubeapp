@@ -11,9 +11,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Youtube'),
-        ),
+        // appBar: AppBar(
+        //   title: const Text('Youtube'),
+        // ),
         body: const Home(),
       ),
     );

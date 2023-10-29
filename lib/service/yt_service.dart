@@ -46,37 +46,36 @@ class YTService {
     }
   }
 
-  Future ytDownloader(YoutubeVideo videoInfo, String inputFileType) async {
+  Future<String> ytDownloader(YoutubeVideo videoInfo, String inputFileType) async {
     print("youtubeDownload start");
-    var yt = YoutubeExplode();
-    var streamInfo;
-    String fileType;
-    StreamManifest streamManifest =
-        await yt.videos.streamsClient.getManifest(videoInfo.id);
+    try {
+      var yt = YoutubeExplode();
+      var streamInfo;
+      String fileType;
+      StreamManifest streamManifest =
+          await yt.videos.streamsClient.getManifest(videoInfo.id);
 
-    if (inputFileType == "mp3") {
-      fileType = inputFileType;
-      streamInfo = streamManifest.audioOnly.withHighestBitrate();
-    } else {
-      fileType = "mp4";
-      streamInfo = streamManifest.muxed.withHighestBitrate();
-    }
-    final int fileSize = streamInfo.size.totalBytes;
+      if (inputFileType == "mp3") {
+        fileType = inputFileType;
+        streamInfo = streamManifest.audioOnly.withHighestBitrate();
+      } else {
+        fileType = "mp4";
+        streamInfo = streamManifest.muxed.withHighestBitrate();
+      }
+      // final int fileSize = streamInfo.size.totalBytes;
 
-    print("streamInfo ${streamInfo} size: ${fileSize}");
-    var stream = yt.videos.streamsClient.get(streamInfo);
-    if (stream != null) {
+      var stream = yt.videos.streamsClient.get(streamInfo);
+
       const path = '/storage/emulated/0/Download';
       var filePath = File("${path}/${videoInfo.title}.$fileType");
       print(filePath);
-      try {
-        var fileStream = filePath.openWrite();
-        print(fileStream);
-        await stream.pipe(fileStream);
-        print("Download Sucessfull");
-      } catch (e) {
-        print(e);
-      }
+      var fileStream = filePath.openWrite();
+      await stream.pipe(fileStream);
+      print("Download Sucessfull");
+      return "sucessfull";
+    } catch (e) {
+      print(e);
+      return "fail";
     }
   }
 }
