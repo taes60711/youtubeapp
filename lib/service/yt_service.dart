@@ -13,7 +13,31 @@ class YTService {
   final String _baseUrl = "www.googleapis.com";
   String _nextPageToken = "";
 
-  Future<List<YoutubeVideo>> searchVideosFromKeyWord({required String keyword}) async {
+  String getVideoID(String url) {
+    int start = 0;
+    if (url.contains('/shorts/')) {
+      start = url.indexOf('/shorts/') + '/shorts/'.length;
+    } else if (url.contains('/youtu.be/')) {
+      start = url.indexOf('/youtu.be/') + '/youtu.be/'.length;
+    } else {
+      start = url.indexOf('?v=') + '?v='.length;
+    }
+    int end = 0;
+    if (url.contains('&list')) {
+      end = url.indexOf('&list');
+    } else if (url.contains('?si')) {
+      end = url.indexOf('?si');
+    } else {
+      end = url.length;
+    }
+
+   
+    String tmpId = url.substring(start, end);
+    return tmpId;
+  }
+
+  Future<List<YoutubeVideo>> searchVideosFromKeyWord(
+      {required String keyword}) async {
     Map<String, String> parameters = {
       'part': 'snippet',
       'q': keyword,
@@ -46,7 +70,8 @@ class YTService {
     }
   }
 
-  Future<String> ytDownloader(YoutubeVideo videoInfo, String inputFileType) async {
+  Future<String> ytDownloader(
+      YoutubeVideo videoInfo, String inputFileType) async {
     print("youtubeDownload start");
     try {
       var yt = YoutubeExplode();
