@@ -272,6 +272,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:youtubeapp/youtubePlayer/listView.dart';
 
 class playerPage extends StatefulWidget {
   playerPage({super.key, this.arguments});
@@ -282,13 +283,9 @@ class playerPage extends StatefulWidget {
 
 class _playerPageState extends State<playerPage> {
   late Map args;
-  late YoutubePlayerController _controller= YoutubePlayerController(
-      initialVideoId: "5Ags3ZeoLYY",
-      flags: const YoutubePlayerFlags(
-        autoPlay: true,
-        mute: false,
-      ),
-    );
+  late YoutubePlayerController _controller = YoutubePlayerController(
+    initialVideoId: "",
+  );
   bool isfullMode = false;
 
   @override
@@ -298,15 +295,19 @@ class _playerPageState extends State<playerPage> {
     _controller = YoutubePlayerController(
       initialVideoId: args["ID"],
       flags: const YoutubePlayerFlags(
-        autoPlay: true,
+        autoPlay: false,
         mute: false,
       ),
     );
   }
 
+  void videoOnChange(String selectedVideoId){
+    _controller.load(selectedVideoId);
+  }
+
   @override
   Widget build(BuildContext context) {
-    print("playerPage");
+    print("playerPage${ModalRoute.of(context)?.settings.name}");
     return Scaffold(
       body: Column(
         children: [
@@ -324,8 +325,13 @@ class _playerPageState extends State<playerPage> {
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text("go to home"),
+            child: const Text("go to home"),
           ),
+          VideoListView(
+            videoItems: args['VideoItems'],
+            inPage: ModalRoute.of(context)?.settings.name as String,
+            onChange: videoOnChange,
+          )
         ],
       ),
     );

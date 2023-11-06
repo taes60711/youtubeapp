@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:youtubeapp/models/video_model.dart';
 
 class VideoListView extends StatefulWidget {
-  VideoListView({super.key, required this.videoInfo});
-  List<YoutubeVideo> videoInfo = [];
+  VideoListView({super.key, required this.videoItems,required this.inPage, this.onChange});
+  List<YoutubeVideo> videoItems = [];
+  String inPage='';
+  Function? onChange;
   @override
   State<VideoListView> createState() => _VideoListViewState();
 }
@@ -47,8 +49,13 @@ class _VideoListViewState extends State<VideoListView> {
                 ],
               ),
               onPressed: () {
-                Navigator.of(context)
-                    .pushNamed("/playerPage", arguments: {'ID': videoInfo.id});
+               if(widget.inPage == '/playerPage'){
+                 print("inpage");
+                 widget.onChange!(videoInfo.id);
+               }else{
+                Navigator.of(context).pushNamed("/playerPage",
+                    arguments: {'ID': videoInfo.id, 'VideoItems': widget.videoItems});
+               }
               },
             )
           : SizedBox(
@@ -76,12 +83,13 @@ class _VideoListViewState extends State<VideoListView> {
 
   @override
   Widget build(BuildContext context) {
-    print("VideoListView");
+    print("VideoListView：${widget.inPage}");
+    
     return Expanded(
       child: ListView.builder(
-          itemCount: widget.videoInfo.length,
+          itemCount: widget.videoItems.length,
           itemBuilder: (context, index) {
-            return listItem(widget.videoInfo[index]);
+            return listItem(widget.videoItems[index]);
           }),
     );
   }

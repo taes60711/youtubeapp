@@ -12,7 +12,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   String _searchKey = "";
   final YTService _ytService = YTService.instance;
-  List<YoutubeVideo> _videoInfo = [];
+  List<YoutubeVideo> _videoItems = [];
   Future<List<YoutubeVideo>> searchVideo(String searchKey) async {
     List<YoutubeVideo> tmpVideos =
         await _ytService.searchVideosFromKeyWord(keyword: searchKey);
@@ -32,13 +32,6 @@ class _HomeState extends State<Home> {
           height: 61,
           color: Colors.black,
         ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.of(context)
-                .pushNamed("/playerPage", arguments: {'ID': "5Ags3ZeoLYY"});
-          },
-          child: const Text("go to playerPage"),
-        ),
         Row(
           children: [
             Expanded(
@@ -51,28 +44,40 @@ class _HomeState extends State<Home> {
                     _searchKey = value;
                   })),
             ),
-            ElevatedButton(
-              child: const Text('Search'),
+            IconButton(
+              icon: const Icon(Icons.search),
               onPressed: () async {
                 if (_searchKey.contains('https://')) {
+                  print("inputed URL");
                   String tmpId = _ytService.getVideoID(_searchKey);
                   print("Result ID : ${tmpId}");
-                  Navigator.of(context)
-                      .pushNamed("/playerPage", arguments: {'ID': tmpId});
+                  List<YoutubeVideo> tmpVideoItems = await searchVideo(tmpId);
+                  Navigator.of(context).pushNamed("/playerPage",
+                      arguments: {'ID': tmpId, 'VideoItems': tmpVideoItems});
                 } else if (_searchKey.isNotEmpty) {
-                  print('search');
-                  var tmpVideoInfo = await searchVideo(_searchKey);
+                  print("inputed KeyWord");
+                  List<YoutubeVideo> tmpVideoInfo =
+                      await searchVideo(_searchKey);
                   setState(() {
-                    _videoInfo = tmpVideoInfo;
+                    _videoItems = tmpVideoInfo;
                   });
                 }
               },
             ),
           ],
         ),
-        VideoListView(
-          videoInfo: _videoInfo,
-        ),
+        _videoItems.isNotEmpty
+            ? VideoListView(
+                videoItems: _videoItems,
+                inPage: ModalRoute.of(context)?.settings.name as String)
+            : const Expanded(
+                child: Center(
+                  child: Icon(
+                    Icons.subtitles_off,
+                    size: 100,
+                  ),
+                ),
+              ),
       ],
     );
   }
