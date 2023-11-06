@@ -54,7 +54,6 @@ class _HomeState extends State<Home> {
                   print("Result ID : ${tmpId}");
                   List<YoutubeVideo> tmpVideoItems =
                       await searchVideo(tmpId);
-                      tmpVideoItems.forEach((element) {print(element.id);});
                       var searchedVideo = tmpVideoItems.where((value) => value.id == tmpId).toList();
                   Navigator.of(context).pushNamed("/playerPage", arguments: {
                     'videoInfo': searchedVideo[0],

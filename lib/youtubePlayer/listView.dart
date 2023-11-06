@@ -58,7 +58,7 @@ class _VideoListViewState extends State<VideoListView> {
               onPressed: () {
                 if (widget.inPage == '/playerPage') {
                   print("inpage");
-                  widget.onChange!(videoInfo.id);
+                  widget.onChange!(videoInfo);
                 } else {
                   Navigator.of(context).pushNamed("/playerPage", arguments: {
                     'videoInfo': videoInfo,

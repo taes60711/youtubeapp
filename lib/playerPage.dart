@@ -272,6 +272,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:youtubeapp/loading.dart';
+import 'package:youtubeapp/models/video_model.dart';
+import 'package:youtubeapp/service/yt_service.dart';
 import 'package:youtubeapp/youtubePlayer/listView.dart';
 
 class playerPage extends StatefulWidget {
@@ -286,14 +289,17 @@ class _playerPageState extends State<playerPage> {
   late YoutubePlayerController _controller = YoutubePlayerController(
     initialVideoId: "",
   );
-  bool isfullMode = false;
+  final YTService _ytService = YTService.instance;
+  bool isDownloading = false;
+  late YoutubeVideo selectedVideo;
 
   @override
   void initState() {
     super.initState();
     args = widget.arguments;
+    selectedVideo = args["videoInfo"];
     _controller = YoutubePlayerController(
-      initialVideoId: args["videoInfo"].id,
+      initialVideoId: selectedVideo.id,
       flags: const YoutubePlayerFlags(
         autoPlay: true,
         mute: false,
@@ -301,8 +307,39 @@ class _playerPageState extends State<playerPage> {
     );
   }
 
-  void videoOnChange(String selectedVideoId) {
-    _controller.load(selectedVideoId);
+  void videoOnChange(YoutubeVideo chnagedVideo) {
+    selectedVideo = chnagedVideo;
+    _controller.load(selectedVideo.id);
+  }
+
+  Widget dlerButton(
+      String text, String downloadType, YoutubeVideo selectedVideo) {
+    return ElevatedButton(
+      child: Text(text),
+      onPressed: () async => {
+        print(selectedVideo.title),
+        setState(() {
+          isDownloading = true;
+        }),
+        await _ytService.ytDownloader(selectedVideo, downloadType),
+        setState(() {
+          isDownloading = false;
+        }),
+      },
+    );
+  }
+
+  Widget dlButtonView() {
+    if (isDownloading) {
+      return loadingWidget();
+    } else {
+      return Column(
+        children: [
+          dlerButton('Download Mp4', "mp4", selectedVideo),
+          dlerButton('Download Mp3', "mp3", selectedVideo),
+        ],
+      );
+    }
   }
 
   @override
@@ -321,6 +358,7 @@ class _playerPageState extends State<playerPage> {
               print("onReady"),
             },
           ),
+          dlButtonView(),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
