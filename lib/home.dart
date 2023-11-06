@@ -13,9 +13,9 @@ class _HomeState extends State<Home> {
   String _searchKey = "";
   final YTService _ytService = YTService.instance;
   List<YoutubeVideo> _videoItems = [];
-  Future<List<YoutubeVideo>> searchVideo(String searchKey) async {
-    List<YoutubeVideo> tmpVideos =
-        await _ytService.searchVideosFromKeyWord(keyword: searchKey);
+  Future<List<YoutubeVideo>> searchVideo(String searchKey, String mode) async {
+    List<YoutubeVideo> tmpVideos = await _ytService.searchVideosFromKeyWord(
+        keyword: searchKey, mode: mode);
     return tmpVideos;
   }
 
@@ -53,8 +53,10 @@ class _HomeState extends State<Home> {
 
                   print("Result ID : ${tmpId}");
                   List<YoutubeVideo> tmpVideoItems =
-                      await searchVideo(tmpId);
-                      var searchedVideo = tmpVideoItems.where((value) => value.id == tmpId).toList();
+                      await searchVideo(tmpId, 'URL');
+                  var searchedVideo = tmpVideoItems
+                      .where((value) => value.id == tmpId)
+                      .toList();
                   Navigator.of(context).pushNamed("/playerPage", arguments: {
                     'videoInfo': searchedVideo[0],
                     'VideoItems': tmpVideoItems,
@@ -63,7 +65,7 @@ class _HomeState extends State<Home> {
                 } else if (_searchKey.isNotEmpty) {
                   print("inputed KeyWord");
                   List<YoutubeVideo> tmpVideoInfo =
-                      await searchVideo(_searchKey);
+                      await searchVideo(_searchKey, 'URL');
                   setState(() {
                     _videoItems = tmpVideoInfo;
                   });

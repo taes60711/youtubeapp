@@ -36,15 +36,26 @@ class YTService {
   }
 
   Future<List<YoutubeVideo>> searchVideosFromKeyWord(
-      {required String keyword}) async {
-    Map<String, String> parameters = {
-      'part': 'snippet',
-      'q': keyword,
-      'maxResults': '30',
-      'pageToken': _nextPageToken,
-      'key': API_KEY,
-      'regionCode': 'TW',
-    };
+      {required String keyword, String? mode}) async {
+    Map<String, String> parameters;
+    if (mode == 'URL') {
+      parameters = {
+        'part': 'snippet',
+        'q': keyword,
+        'maxResults': '30',
+        'key': API_KEY,
+        'regionCode': 'TW',
+      };
+    } else {
+      parameters = {
+        'part': 'snippet',
+        'q': keyword,
+        'maxResults': '30',
+        'pageToken': _nextPageToken,
+        'key': API_KEY,
+        'regionCode': 'TW',
+      };
+    }
     Uri uri = Uri.https(_baseUrl, '/youtube/v3/search', parameters);
     print(uri);
     var response = await http.get(uri);
@@ -60,7 +71,7 @@ class YTService {
             if (json['id']['kind'] == "youtube#video")
               {
                 // if (json['id']['videoId'] != keyword)
-                  videos.add(YoutubeVideo.fromMap(json, 'video'))
+                videos.add(YoutubeVideo.fromMap(json, 'video'))
               }
             else if (json['id']['kind'] == "youtube#channel")
               videos.add(YoutubeVideo.fromMap(json, 'channel'))
