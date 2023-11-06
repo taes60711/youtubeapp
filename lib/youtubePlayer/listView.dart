@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:youtubeapp/models/video_model.dart';
+import 'package:youtubeapp/service/yt_service.dart';
 
 class VideoListView extends StatefulWidget {
-  VideoListView({super.key, required this.videoItems,required this.inPage, this.onChange});
+  VideoListView(
+      {super.key,
+      required this.videoItems,
+      required this.inPage,
+      this.onChange,
+      required this.searchKey});
   List<YoutubeVideo> videoItems = [];
-  String inPage='';
+  String inPage = '';
+  String searchKey = '';
   Function? onChange;
   @override
   State<VideoListView> createState() => _VideoListViewState();
@@ -49,13 +56,16 @@ class _VideoListViewState extends State<VideoListView> {
                 ],
               ),
               onPressed: () {
-               if(widget.inPage == '/playerPage'){
-                 print("inpage");
-                 widget.onChange!(videoInfo.id);
-               }else{
-                Navigator.of(context).pushNamed("/playerPage",
-                    arguments: {'ID': videoInfo.id, 'VideoItems': widget.videoItems});
-               }
+                if (widget.inPage == '/playerPage') {
+                  print("inpage");
+                  widget.onChange!(videoInfo.id);
+                } else {
+                  Navigator.of(context).pushNamed("/playerPage", arguments: {
+                    'ID': videoInfo.id,
+                    'VideoItems': widget.videoItems,
+                    'searchKey': widget.searchKey,
+                  });
+                }
               },
             )
           : SizedBox(
@@ -83,14 +93,34 @@ class _VideoListViewState extends State<VideoListView> {
 
   @override
   Widget build(BuildContext context) {
-    print("VideoListView：${widget.inPage}");
-    
+    ScrollController _scrollController = ScrollController();
+    final YTService _ytService = YTService.instance;
+
     return Expanded(
-      child: ListView.builder(
-          itemCount: widget.videoItems.length,
-          itemBuilder: (context, index) {
-            return listItem(widget.videoItems[index]);
-          }),
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollNotification) {
+          if (scrollNotification is ScrollEndNotification) {
+            final before = scrollNotification.metrics.extentBefore;
+            final max = scrollNotification.metrics.maxScrollExtent;
+            if (before == max) {
+              _ytService
+                  .searchVideosFromKeyWord(keyword: widget.searchKey)
+                  .then(
+                    (value) => setState(() {
+                      widget.videoItems.addAll(value);
+                    }),
+                  );
+            }
+          }
+          return false;
+        },
+        child: ListView.builder(
+            controller: _scrollController,
+            itemCount: widget.videoItems.length,
+            itemBuilder: (context, index) {
+              return listItem(widget.videoItems[index]);
+            }),
+      ),
     );
   }
 }

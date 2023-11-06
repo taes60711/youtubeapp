@@ -295,13 +295,13 @@ class _playerPageState extends State<playerPage> {
     _controller = YoutubePlayerController(
       initialVideoId: args["ID"],
       flags: const YoutubePlayerFlags(
-        autoPlay: false,
+        autoPlay: true,
         mute: false,
       ),
     );
   }
 
-  void videoOnChange(String selectedVideoId){
+  void videoOnChange(String selectedVideoId) {
     _controller.load(selectedVideoId);
   }
 
@@ -330,6 +330,7 @@ class _playerPageState extends State<playerPage> {
           VideoListView(
             videoItems: args['VideoItems'],
             inPage: ModalRoute.of(context)?.settings.name as String,
+            searchKey: args['searchKey'],
             onChange: videoOnChange,
           )
         ],

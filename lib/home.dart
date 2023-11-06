@@ -50,10 +50,15 @@ class _HomeState extends State<Home> {
                 if (_searchKey.contains('https://')) {
                   print("inputed URL");
                   String tmpId = _ytService.getVideoID(_searchKey);
+
                   print("Result ID : ${tmpId}");
-                  List<YoutubeVideo> tmpVideoItems = await searchVideo(tmpId);
-                  Navigator.of(context).pushNamed("/playerPage",
-                      arguments: {'ID': tmpId, 'VideoItems': tmpVideoItems});
+                  List<YoutubeVideo> tmpVideoItems =
+                      await searchVideo(tmpId);
+                  Navigator.of(context).pushNamed("/playerPage", arguments: {
+                    'ID': tmpId,
+                    'VideoItems': tmpVideoItems,
+                    'searchKey': tmpId
+                  });
                 } else if (_searchKey.isNotEmpty) {
                   print("inputed KeyWord");
                   List<YoutubeVideo> tmpVideoInfo =
@@ -69,7 +74,8 @@ class _HomeState extends State<Home> {
         _videoItems.isNotEmpty
             ? VideoListView(
                 videoItems: _videoItems,
-                inPage: ModalRoute.of(context)?.settings.name as String)
+                inPage: ModalRoute.of(context)?.settings.name as String,
+                searchKey: _searchKey)
             : const Expanded(
                 child: Center(
                   child: Icon(
