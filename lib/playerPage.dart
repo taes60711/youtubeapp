@@ -293,7 +293,7 @@ class _playerPageState extends State<playerPage> {
     super.initState();
     args = widget.arguments;
     _controller = YoutubePlayerController(
-      initialVideoId: args["ID"],
+      initialVideoId: args["videoInfo"].id,
       flags: const YoutubePlayerFlags(
         autoPlay: true,
         mute: false,

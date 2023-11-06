@@ -61,7 +61,7 @@ class _VideoListViewState extends State<VideoListView> {
                   widget.onChange!(videoInfo.id);
                 } else {
                   Navigator.of(context).pushNamed("/playerPage", arguments: {
-                    'ID': videoInfo.id,
+                    'videoInfo': videoInfo,
                     'VideoItems': widget.videoItems,
                     'searchKey': widget.searchKey,
                   });

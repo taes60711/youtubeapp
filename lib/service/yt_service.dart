@@ -59,7 +59,7 @@ class YTService {
       videosJson.forEach((json) => {
             if (json['id']['kind'] == "youtube#video")
               {
-                if (json['id']['videoId'] != keyword)
+                // if (json['id']['videoId'] != keyword)
                   videos.add(YoutubeVideo.fromMap(json, 'video'))
               }
             else if (json['id']['kind'] == "youtube#channel")
