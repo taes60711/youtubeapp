@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/service/yt_service.dart';
-import 'package:youtubeapp/youtubePlayer/listView.dart';
+import 'package:youtubeapp/components/youtubePlayer/listView.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -13,9 +13,9 @@ class _HomeState extends State<Home> {
   String _searchKey = "";
   final YTService _ytService = YTService.instance;
   List<YoutubeVideo> _videoItems = [];
-  Future<List<YoutubeVideo>> searchVideo(String searchKey, String mode) async {
+  Future<List<YoutubeVideo>> searchVideo(String searchKey) async {
     List<YoutubeVideo> tmpVideos = await _ytService.searchVideosFromKeyWord(
-        keyword: searchKey, mode: mode);
+        keyword: searchKey, mode: 'URL');
     return tmpVideos;
   }
 
@@ -50,10 +50,8 @@ class _HomeState extends State<Home> {
                 if (_searchKey.contains('https://')) {
                   print("inputed URL");
                   String tmpId = _ytService.getVideoID(_searchKey);
-
                   print("Result ID : ${tmpId}");
-                  List<YoutubeVideo> tmpVideoItems =
-                      await searchVideo(tmpId, 'URL');
+                  List<YoutubeVideo> tmpVideoItems = await searchVideo(tmpId);
                   var searchedVideo = tmpVideoItems
                       .where((value) => value.id == tmpId)
                       .toList();
@@ -65,7 +63,7 @@ class _HomeState extends State<Home> {
                 } else if (_searchKey.isNotEmpty) {
                   print("inputed KeyWord");
                   List<YoutubeVideo> tmpVideoInfo =
-                      await searchVideo(_searchKey, 'URL');
+                      await searchVideo(_searchKey);
                   setState(() {
                     _videoItems = tmpVideoInfo;
                   });

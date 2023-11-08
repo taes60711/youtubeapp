@@ -105,7 +105,8 @@ class YTService {
       var stream = yt.videos.streamsClient.get(streamInfo);
 
       const path = '/storage/emulated/0/Download';
-      var filePath = File("${path}/${videoInfo.title}.$fileType");
+      String videoTitle =videoInfo.title.replaceAll('.', '').replaceAll('/', '').replaceAll('-', '');
+      var filePath = File("${path}/${videoTitle}.$fileType");
       print(filePath);
       var fileStream = filePath.openWrite();
       await stream.pipe(fileStream);
