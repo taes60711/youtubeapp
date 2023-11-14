@@ -1,27 +1,38 @@
+// ignore_for_file: slash_for_doc_comments
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:youtubeapp/components/loading.dart';
 import 'package:youtubeapp/models/video_model.dart';
-import 'package:youtubeapp/service/yt_service.dart';
+import 'package:youtubeapp/states/playerState.dart';
 import 'package:youtubeapp/components/youtubePlayer/listView.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
+class Home extends StatelessWidget {
   String _searchKey = "";
-  final YTService _ytService = YTService.instance;
-  List<YoutubeVideo> _videoItems = [];
-  Future<List<YoutubeVideo>> searchVideo(String searchKey) async {
-    List<YoutubeVideo> tmpVideos = await _ytService.searchVideosFromKeyWord(
-        keyword: searchKey, mode: 'URL');
-    return tmpVideos;
-  }
 
-  @override
-  void initState() {
-    super.initState();
+/**
+ * キーワードで動画リストを検索の処理する
+ */
+  Future<void> searchVideoItems(BuildContext context, String mode) async {
+    switch (mode) {
+      case 'URL':
+        String tmpId = context.read<VideoPlayerCubit>().getVideoId(_searchKey);
+        print("Result ID : ${tmpId}");
+        String videoTitle =
+            await context.read<VideoPlayerCubit>().searchVideoDetail(tmpId);
+        await context.read<VideoPlayerCubit>().searchVideo(videoTitle, 'URL');
+        List<YoutubeVideo> searchedVideoItems =
+            context.read<VideoPlayerCubit>().state.videoItems;
+        Navigator.of(context).pushNamed("/playerPage", arguments: {
+          'videoInfo': searchedVideoItems[0],
+          'VideoItems': searchedVideoItems,
+          'searchKey': tmpId
+        });
+        break;
+      case 'NORMAL':
+        await context.read<VideoPlayerCubit>().searchVideo(_searchKey, 'URL');
+        break;
+    }
   }
 
   @override
@@ -45,46 +56,41 @@ class _HomeState extends State<Home> {
                   })),
             ),
             IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () async {
-                if (_searchKey.contains('https://')) {
-                  print("inputed URL");
-                  String tmpId = _ytService.getVideoID(_searchKey);
-                  print("Result ID : ${tmpId}");
-                  List<YoutubeVideo> tmpVideoItems = await searchVideo(tmpId);
-                  var searchedVideo = tmpVideoItems
-                      .where((value) => value.id == tmpId)
-                      .toList();
-                  Navigator.of(context).pushNamed("/playerPage", arguments: {
-                    'videoInfo': searchedVideo[0],
-                    'VideoItems': tmpVideoItems,
-                    'searchKey': tmpId
-                  });
-                } else if (_searchKey.isNotEmpty) {
-                  print("inputed KeyWord");
-                  List<YoutubeVideo> tmpVideoInfo =
-                      await searchVideo(_searchKey);
-                  setState(() {
-                    _videoItems = tmpVideoInfo;
-                  });
-                }
-              },
-            ),
+                icon: const Icon(Icons.search),
+                onPressed: () async {
+                  String mode = '';
+                  if (_searchKey.isNotEmpty) {
+                    if (_searchKey.contains('https://')) {
+                      mode = 'URL';
+                    } else {
+                      mode = 'NORMAL';
+                    }
+                    await searchVideoItems(context, mode);
+                  }
+                }),
           ],
         ),
-        _videoItems.isNotEmpty
-            ? VideoListView(
-                videoItems: _videoItems,
-                inPage: ModalRoute.of(context)?.settings.name as String,
-                searchKey: _searchKey)
-            : const Expanded(
-                child: Center(
-                  child: Icon(
-                    Icons.subtitles_off,
-                    size: 100,
-                  ),
-                ),
-              ),
+        BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
+          builder: ((context, state) {
+            if (state is LoadingState) {
+              return const LoadingWidget();
+            } else {
+              return state.videoItems.isNotEmpty
+                  ? VideoListView(
+                      videoItems: state.videoItems,
+                      inPage: ModalRoute.of(context)?.settings.name as String,
+                      searchKey: _searchKey)
+                  : const Expanded(
+                      child: Center(
+                        child: Icon(
+                          Icons.subtitles_off,
+                          size: 100,
+                        ),
+                      ),
+                    );
+            }
+          }),
+        ),
       ],
     );
   }

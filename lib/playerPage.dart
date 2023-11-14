@@ -62,7 +62,7 @@ class _playerPageState extends State<playerPage> {
 
   Widget dlButtonView() {
     if (isLoading['download'] as bool) {
-      return const loadingWidget();
+      return const LoadingWidget();
     } else {
       return Column(
         children: [

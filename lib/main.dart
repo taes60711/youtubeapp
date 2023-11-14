@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/home.dart';
 import 'package:youtubeapp/playerPage.dart';
+import 'package:youtubeapp/states/playerState.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,8 +13,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const Scaffold(
-        body: Home(),
+      home: BlocProvider(
+        create: (_) => VideoPlayerCubit(),
+        child: Scaffold(
+          body: Home(),
+        ),
       ),
       routes: <String, WidgetBuilder>{
         '/home': (BuildContext context) => new Home(),

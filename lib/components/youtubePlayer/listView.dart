@@ -18,6 +18,30 @@ class VideoListView extends StatefulWidget {
 }
 
 class _VideoListViewState extends State<VideoListView> {
+
+    void bottomSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+        context: context,
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        enableDrag: true,
+        barrierColor: Colors.black.withOpacity(0.5),
+        builder: (context) {
+          return Container(
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(10),
+              ),
+            ),
+            child: const Center(
+              child: Text('modal bottom sheet'),
+            ),
+          );
+        });
+  }
+
   Widget listItem(YoutubeVideo videoInfo) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -56,8 +80,8 @@ class _VideoListViewState extends State<VideoListView> {
                 ],
               ),
               onPressed: () {
+                // bottomSheet(context);
                 if (widget.inPage == '/playerPage') {
-                  print("inpage");
                   widget.onChange!(videoInfo);
                 } else {
                   Navigator.of(context).pushNamed("/playerPage", arguments: {

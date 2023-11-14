@@ -45,6 +45,7 @@ class YTService {
         'maxResults': '30',
         'key': API_KEY,
         'regionCode': 'TW',
+        'order':'searchSortUnspecified'
       };
     } else {
       parameters = {
@@ -54,6 +55,7 @@ class YTService {
         'pageToken': _nextPageToken,
         'key': API_KEY,
         'regionCode': 'TW',
+        'order':'searchSortUnspecified'
       };
     }
     Uri uri = Uri.https(_baseUrl, '/youtube/v3/search', parameters);
@@ -82,6 +84,33 @@ class YTService {
       throw json.decode(response.body)['error']['message'];
     }
   }
+
+
+
+  Future<String> searchVideoDetail(
+      {required String videoId}) async {
+    Map<String, String> parameters;
+      parameters = {
+        'part': 'snippet',
+        'id': videoId,
+        'key': API_KEY,
+      };
+    Uri uri = Uri.https(_baseUrl, '/youtube/v3/videos', parameters);
+    print(uri);
+    var response = await http.get(uri);
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+    
+      print("data  ${data['items'][0]['snippet']['title']}");
+
+      String videoTitle = data['items'][0]['snippet']['title'];
+
+      return videoTitle;
+    } else {
+      throw json.decode(response.body)['error']['message'];
+    }
+  }
+
 
   Future<String> ytDownloader(
       YoutubeVideo videoInfo, String inputFileType) async {
