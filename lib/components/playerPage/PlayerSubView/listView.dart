@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:youtubeapp/components/playerPage/playerVideoInfo_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
+import 'package:youtubeapp/components/playerPage/playerPage.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 
 class VideoListView extends StatefulWidget {
   VideoListView(
       {super.key,
       required this.videoItems,
-      required this.inPage,
+      required this.routerPage,
       this.onChange,
       required this.searchKey});
   List<YoutubeVideo> videoItems = [];
-  String inPage = '';
+  String routerPage = '';
   String searchKey = '';
   Function? onChange;
   @override
@@ -18,31 +20,7 @@ class VideoListView extends StatefulWidget {
 }
 
 class _VideoListViewState extends State<VideoListView> {
-
-    void bottomSheet(BuildContext context) {
-    showModalBottomSheet<void>(
-        context: context,
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true,
-        enableDrag: true,
-        barrierColor: Colors.black.withOpacity(0.5),
-        builder: (context) {
-          return Container(
-            height: double.infinity,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(10),
-              ),
-            ),
-            child: const Center(
-              child: Text('modal bottom sheet'),
-            ),
-          );
-        });
-  }
-
-  Widget listItem(YoutubeVideo videoInfo) {
+  Widget listItem(YoutubeVideo videoInfo, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: videoInfo.kind == 'video'
@@ -80,15 +58,18 @@ class _VideoListViewState extends State<VideoListView> {
                 ],
               ),
               onPressed: () {
-                // bottomSheet(context);
-                if (widget.inPage == '/playerPage') {
+                if (widget.routerPage == '/playerPage') {
                   widget.onChange!(videoInfo);
                 } else {
-                  Navigator.of(context).pushNamed("/playerPage", arguments: {
-                    'videoInfo': videoInfo,
-                    'VideoItems': widget.videoItems,
-                    'searchKey': widget.searchKey,
-                  });
+                  Map<String, dynamic> videoObject = {
+                    'selectedVideo': videoInfo,
+                    'videoItems': widget.videoItems,
+                    'searchKey': widget.searchKey
+                  };
+                  PlayerVideoInfo playerPageInfo =
+                      PlayerVideoInfo.fromMap(videoObject);
+
+                  playerPage(context, playerPageInfo);
                 }
               },
             )
@@ -142,7 +123,7 @@ class _VideoListViewState extends State<VideoListView> {
             controller: _scrollController,
             itemCount: widget.videoItems.length,
             itemBuilder: (context, index) {
-              return listItem(widget.videoItems[index]);
+              return listItem(widget.videoItems[index], context);
             }),
       ),
     );

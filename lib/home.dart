@@ -1,11 +1,11 @@
-// ignore_for_file: slash_for_doc_comments
+// ignore_for_file: slash_for_doc_comments, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/components/loading.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/states/playerState.dart';
-import 'package:youtubeapp/components/youtubePlayer/listView.dart';
+import 'package:youtubeapp/components/playerPage/PlayerSubView/listView.dart';
 
 class Home extends StatelessWidget {
   String _searchKey = "";
@@ -35,6 +35,36 @@ class Home extends StatelessWidget {
     }
   }
 
+  Widget searchBar(context) {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+              decoration: const InputDecoration(
+                hintText: 'Enter a search',
+                border: InputBorder.none,
+              ),
+              onChanged: ((value) {
+                _searchKey = value;
+              })),
+        ),
+        IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () async {
+              if (_searchKey.isNotEmpty) {
+                String mode = '';
+                if (_searchKey.contains('https://')) {
+                  mode = 'URL';
+                } else {
+                  mode = 'NORMAL';
+                }
+                await searchVideoItems(context, mode);
+              }
+            }),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -43,33 +73,7 @@ class Home extends StatelessWidget {
           height: 61,
           color: Colors.black,
         ),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Enter a search',
-                    border: InputBorder.none,
-                  ),
-                  onChanged: ((value) {
-                    _searchKey = value;
-                  })),
-            ),
-            IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: () async {
-                  String mode = '';
-                  if (_searchKey.isNotEmpty) {
-                    if (_searchKey.contains('https://')) {
-                      mode = 'URL';
-                    } else {
-                      mode = 'NORMAL';
-                    }
-                    await searchVideoItems(context, mode);
-                  }
-                }),
-          ],
-        ),
+        searchBar(context),
         BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
           builder: ((context, state) {
             if (state is LoadingState) {
@@ -78,7 +82,7 @@ class Home extends StatelessWidget {
               return state.videoItems.isNotEmpty
                   ? VideoListView(
                       videoItems: state.videoItems,
-                      inPage: ModalRoute.of(context)?.settings.name as String,
+                      routerPage: 'home',
                       searchKey: _searchKey)
                   : const Expanded(
                       child: Center(

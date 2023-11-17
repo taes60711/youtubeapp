@@ -3,8 +3,9 @@ import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 
 abstract class VideoPlayerState {
-  dynamic videoItems;
-  VideoPlayerState({this.videoItems});
+  dynamic videoItems = [];
+  dynamic searchKey = '';
+  VideoPlayerState({this.videoItems, this.searchKey});
 }
 
 class PlayerInitialState extends VideoPlayerState {
@@ -15,7 +16,7 @@ class PlayerInitialState extends VideoPlayerState {
 class LoadingState extends VideoPlayerState {}
 
 class SearchSuccesState extends VideoPlayerState {
-    SearchSuccesState({required List<YoutubeVideo> videoItems})
+  SearchSuccesState({required List<YoutubeVideo> videoItems})
       : super(videoItems: videoItems);
 }
 
@@ -35,7 +36,6 @@ class VideoPlayerCubit extends Cubit<VideoPlayerState> {
           .searchVideosFromKeyWord(keyword: keyword, mode: mode);
 
       emit(SearchSuccesState(videoItems: searchResult));
-
     } catch (error) {
       emit(SearchErrorState(message: error.toString()));
       rethrow;
