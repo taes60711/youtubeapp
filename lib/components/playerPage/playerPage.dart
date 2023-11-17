@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:youtubeapp/components/playerPage/PlayerSubView/downloadView.dart';
 import 'package:youtubeapp/components/playerPage/PlayerSubView/listView.dart';
-import 'package:youtubeapp/components/playerPage/playerVideoInfo_model.dart';
+import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
 
-void playerPage(BuildContext context,PlayerVideoInfo videoObject) {
+void playerPage(BuildContext context, VideoList videoObject) {
   late YoutubePlayerController controller = YoutubePlayerController(
     initialVideoId: "",
   );
 
   controller = YoutubePlayerController(
-    initialVideoId: videoObject.selectedVideo.id,
+    initialVideoId: videoObject.selectedVideo!.id,
     flags: const YoutubePlayerFlags(
       autoPlay: true,
       mute: false,
@@ -20,7 +20,7 @@ void playerPage(BuildContext context,PlayerVideoInfo videoObject) {
 
   void videoOnChange(YoutubeVideo chnagedVideo) {
     videoObject.selectedVideo = chnagedVideo;
-    controller.load(videoObject.selectedVideo.id);
+    controller.load(videoObject.selectedVideo!.id);
   }
 
   showModalBottomSheet<void>(
@@ -52,9 +52,7 @@ void playerPage(BuildContext context,PlayerVideoInfo videoObject) {
               ),
               DownloadView(selectedVideo: videoObject.selectedVideo),
               VideoListView(
-                videoItems: videoObject.videoItems,
-                routerPage: '/playerPage',
-                searchKey: videoObject.searchKey,
+                videoListInfo: videoObject,
                 onChange: videoOnChange,
               )
             ],

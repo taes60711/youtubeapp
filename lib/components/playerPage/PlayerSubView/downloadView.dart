@@ -4,8 +4,8 @@ import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 
 class DownloadView extends StatefulWidget {
-  DownloadView({super.key, required this.selectedVideo});
-  YoutubeVideo selectedVideo;
+  DownloadView({super.key,  this.selectedVideo});
+  YoutubeVideo? selectedVideo;
 
   @override
   State<DownloadView> createState() => _DownloadViewState();

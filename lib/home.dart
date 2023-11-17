@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/components/loading.dart';
+import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/states/playerState.dart';
 import 'package:youtubeapp/components/playerPage/PlayerSubView/listView.dart';
@@ -79,11 +80,14 @@ class Home extends StatelessWidget {
             if (state is LoadingState) {
               return const LoadingWidget();
             } else {
+              Map<String, dynamic> videoListObject = {
+                'videoItems': state.videoItems,
+                'searchKey': _searchKey,
+                'routerPage': 'home',
+              };
+              VideoList videoListInfo = VideoList.fromMap(videoListObject);
               return state.videoItems.isNotEmpty
-                  ? VideoListView(
-                      videoItems: state.videoItems,
-                      routerPage: 'home',
-                      searchKey: _searchKey)
+                  ? VideoListView(videoListInfo: videoListInfo)
                   : const Expanded(
                       child: Center(
                         child: Icon(

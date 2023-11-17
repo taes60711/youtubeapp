@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:youtubeapp/components/playerPage/playerVideoInfo_model.dart';
+import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/components/playerPage/playerPage.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 
 class VideoListView extends StatefulWidget {
-  VideoListView(
-      {super.key,
-      required this.videoItems,
-      required this.routerPage,
-      this.onChange,
-      required this.searchKey});
-  List<YoutubeVideo> videoItems = [];
-  String routerPage = '';
-  String searchKey = '';
+  VideoListView({
+    super.key,
+    required this.videoListInfo,
+    this.onChange,
+  });
+  VideoList videoListInfo;
   Function? onChange;
   @override
   State<VideoListView> createState() => _VideoListViewState();
 }
 
 class _VideoListViewState extends State<VideoListView> {
-  Widget listItem(YoutubeVideo videoInfo, BuildContext context) {
+  Widget listItem(
+      BuildContext context, YoutubeVideo videoInfo, VideoList videoListInfo) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: videoInfo.kind == 'video'
@@ -58,17 +56,16 @@ class _VideoListViewState extends State<VideoListView> {
                 ],
               ),
               onPressed: () {
-                if (widget.routerPage == '/playerPage') {
+                if (videoListInfo.routerPage == '/playerPage') {
                   widget.onChange!(videoInfo);
                 } else {
                   Map<String, dynamic> videoObject = {
+                    'videoItems': videoListInfo.videoItems,
+                    'searchKey': videoListInfo.searchKey,
                     'selectedVideo': videoInfo,
-                    'videoItems': widget.videoItems,
-                    'searchKey': widget.searchKey
+                    'routerPage': '/playerPage',
                   };
-                  PlayerVideoInfo playerPageInfo =
-                      PlayerVideoInfo.fromMap(videoObject);
-
+                  VideoList playerPageInfo = VideoList.fromMap(videoObject);
                   playerPage(context, playerPageInfo);
                 }
               },
@@ -100,7 +97,7 @@ class _VideoListViewState extends State<VideoListView> {
   Widget build(BuildContext context) {
     ScrollController _scrollController = ScrollController();
     final YTService _ytService = YTService.instance;
-
+    VideoList? videoListInfo = widget.videoListInfo;
     return Expanded(
       child: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollNotification) {
@@ -109,10 +106,10 @@ class _VideoListViewState extends State<VideoListView> {
             final max = scrollNotification.metrics.maxScrollExtent;
             if (before == max) {
               _ytService
-                  .searchVideosFromKeyWord(keyword: widget.searchKey)
+                  .searchVideosFromKeyWord(keyword: videoListInfo.searchKey)
                   .then(
                     (value) => setState(() {
-                      widget.videoItems.addAll(value);
+                      videoListInfo.videoItems.addAll(value);
                     }),
                   );
             }
@@ -121,9 +118,10 @@ class _VideoListViewState extends State<VideoListView> {
         },
         child: ListView.builder(
             controller: _scrollController,
-            itemCount: widget.videoItems.length,
+            itemCount: videoListInfo.videoItems.length,
             itemBuilder: (context, index) {
-              return listItem(widget.videoItems[index], context);
+              return listItem(
+                  context, videoListInfo.videoItems[index], videoListInfo);
             }),
       ),
     );
