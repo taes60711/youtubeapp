@@ -26,24 +26,16 @@ class Home extends StatelessWidget {
         _searchKey = videoTitle;
         List<YoutubeVideo> searchedVideoItems =
             context.read<VideoPlayerCubit>().state.videoItems;
+        int index =
+            searchedVideoItems.indexWhere((element) => element.id == tmpId);
+        var tmpVideo = searchedVideoItems[0];
+        searchedVideoItems[0] = searchedVideoItems[index];
+        searchedVideoItems[index] = tmpVideo;
 
-        Map<String, dynamic> urlVideoMap = {
-          'id': {'videoId': tmpId},
-          'snippet': {
-            'title': '',
-            'thumbnails': {
-              'high': {'url': ''}
-            },
-            'channelTitle': '',
-            'publishedAt': ''
-          },
-        };
-
-        YoutubeVideo urlVideo = YoutubeVideo.fromMap(urlVideoMap, 'video');
         Map<String, dynamic> videoObject = {
           'videoItems': searchedVideoItems,
           'searchKey': videoTitle,
-          'selectedVideo': urlVideo,
+          'selectedVideo': searchedVideoItems[0],
           'routerPage': '/playerPage',
         };
         VideoList playerPageInfo = VideoList.fromMap(videoObject);

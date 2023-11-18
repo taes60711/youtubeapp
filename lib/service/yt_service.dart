@@ -80,9 +80,11 @@ class YTService {
           });
       videos.sort((a, b) => (b.publishedAt).compareTo(a.publishedAt));
       videos.sort((a, b) => (a.kind).compareTo(b.kind));
-      videos.forEach((element) {
-        print('data Info : ${element.kind} publishAt ${element.publishedAt}');
-      });
+      for (int i = 0; i < videos.length; i++) {
+        print(
+            'index : ${i} data Info : ${videos[i].kind} id ${videos[i].id}');
+      }
+
       return videos;
     } else {
       throw json.decode(response.body)['error']['message'];
