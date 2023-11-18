@@ -19,6 +19,8 @@ class YoutubeVideo {
     String id;
     if (kind == 'video') {
       id = json['id']['videoId'];
+    } else if (kind == 'channelVideo') {
+      id = json['contentDetails']['videoId'];
     } else {
       id = json['id']['channelId'];
     }
@@ -28,7 +30,7 @@ class YoutubeVideo {
       title: json['snippet']['title'],
       thumbnailUrl: json['snippet']['thumbnails']['high']['url'],
       channelTitle: json['snippet']['channelTitle'],
-      publishedAt:json['snippet']['publishedAt'],
+      publishedAt: json['snippet']['publishedAt'],
     );
   }
 }

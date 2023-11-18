@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:youtubeapp/channel.dart';
 import 'package:youtubeapp/home.dart';
 import 'package:youtubeapp/states/playerState.dart';
 
@@ -18,6 +19,10 @@ class MyApp extends StatelessWidget {
           body: Home(),
         ),
       ),
+      routes: <String, WidgetBuilder>{
+        '/home': (BuildContext context) => new Home(),
+        '/channel': (BuildContext context) =>const Channel(),   
+      },
     );
   }
 }

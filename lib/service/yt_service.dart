@@ -78,11 +78,10 @@ class YTService {
             else if (json['id']['kind'] == "youtube#channel")
               videos.add(YoutubeVideo.fromMap(json, 'channel'))
           });
-      videos.sort((a, b) => (b.publishedAt).compareTo(a.publishedAt));
+      // videos.sort((a, b) => (b.publishedAt).compareTo(a.publishedAt));
       videos.sort((a, b) => (a.kind).compareTo(b.kind));
       for (int i = 0; i < videos.length; i++) {
-        print(
-            'index : ${i} data Info : ${videos[i].kind} id ${videos[i].id}');
+        print('index : ${i} data Info : ${videos[i].kind} id ${videos[i].id}');
       }
 
       return videos;
@@ -121,6 +120,38 @@ class YTService {
       }
       print('videoTitle: ' + videoTitle);
       return videoTitle;
+    } else {
+      throw json.decode(response.body)['error']['message'];
+    }
+  }
+
+  Future<List<YoutubeVideo>> searchVideosFromChannel(
+      {required String channelId}) async {
+    Map<String, String> parameters;
+    String playlistId =
+        '${channelId.substring(0, 1)}U${channelId.substring(2)}';
+    parameters = {
+      'part': 'part=snippet&part=contentDetails',
+      'key': API_KEY,
+      'playlistId': playlistId,
+      'maxResults': '30',
+    };
+    //  contentDetails
+
+    String url =
+        'https://$_baseUrl/youtube/v3/playlistItems?${parameters['part']}&key=${parameters['key']}&playlistId=${parameters['playlistId']}&maxResults=${parameters['maxResults']}';
+    Uri uri = Uri.parse(url);
+    print(uri);
+    var response = await http.get(uri);
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      print("data${data}");
+      List<YoutubeVideo> videos = [];
+      data['items'].forEach((json) {
+        videos.add(YoutubeVideo.fromMap(json, 'channelVideo'));
+      });
+
+      return videos;
     } else {
       throw json.decode(response.body)['error']['message'];
     }

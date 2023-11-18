@@ -17,6 +17,7 @@ class VideoListView extends StatefulWidget {
 }
 
 class _VideoListViewState extends State<VideoListView> {
+  final YTService _ytService = YTService.instance;
   Widget listItem(
       BuildContext context, YoutubeVideo videoInfo, VideoList videoListInfo) {
     return Padding(
@@ -24,12 +25,12 @@ class _VideoListViewState extends State<VideoListView> {
       child: videoInfo.kind == 'video'
           ? ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(0) 
-                      ),
-                  padding: const EdgeInsets.all(0),
-                  backgroundColor: Color.fromARGB(255, 33, 32, 32),
-                  elevation: 0,),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(0)),
+                padding: const EdgeInsets.all(0),
+                backgroundColor: Color.fromARGB(255, 33, 32, 32),
+                elevation: 0,
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -76,22 +77,30 @@ class _VideoListViewState extends State<VideoListView> {
             )
           : SizedBox(
               height: 80,
-              child: Row(
-                children: [
-                  SizedBox(
-                    height: 80,
-                    width: 130,
-                    child: Center(
-                        child: ClipRRect(
-                      borderRadius: BorderRadius.circular(40),
-                      child: Image(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(videoInfo.thumbnailUrl),
-                      ),
-                    )),
-                  ),
-                  Text(videoInfo.channelTitle)
-                ],
+              child: ElevatedButton(
+                onPressed: () async {
+                  List<YoutubeVideo> videos = await _ytService
+                      .searchVideosFromChannel(channelId: videoInfo.id);
+                  Navigator.pushNamed(context, '/channel',
+                      arguments: {'videoItems': videos});
+                },
+                child: Row(
+                  children: [
+                    SizedBox(
+                      height: 80,
+                      width: 130,
+                      child: Center(
+                          child: ClipRRect(
+                        borderRadius: BorderRadius.circular(40),
+                        child: Image(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(videoInfo.thumbnailUrl),
+                        ),
+                      )),
+                    ),
+                    Text(videoInfo.channelTitle)
+                  ],
+                ),
               ),
             ),
     );
@@ -101,7 +110,7 @@ class _VideoListViewState extends State<VideoListView> {
   Widget build(BuildContext context) {
     ScrollController _scrollController = ScrollController();
 
-    final YTService _ytService = YTService.instance;
+    // final YTService _ytService = YTService.instance;
     VideoList? videoListInfo = widget.videoListInfo;
     return Expanded(
       child: NotificationListener<ScrollNotification>(
