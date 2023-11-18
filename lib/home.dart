@@ -23,6 +23,7 @@ class Home extends StatelessWidget {
         String videoTitle =
             await context.read<VideoPlayerCubit>().searchVideoDetail(tmpId);
         await context.read<VideoPlayerCubit>().searchVideo(videoTitle, 'URL');
+        _searchKey = videoTitle;
         List<YoutubeVideo> searchedVideoItems =
             context.read<VideoPlayerCubit>().state.videoItems;
 
