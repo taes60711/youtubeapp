@@ -78,7 +78,7 @@ class YTService {
             else if (json['id']['kind'] == "youtube#channel")
               videos.add(YoutubeVideo.fromMap(json, 'channel'))
           });
-
+      videos.sort((a, b) => (a.kind).compareTo(b.kind));
       return videos;
     } else {
       throw json.decode(response.body)['error']['message'];
@@ -101,16 +101,14 @@ class YTService {
       // print("data tag  ${data['items'][0]['snippet']['tags']}");
       String videoTitle = data['items'][0]['snippet']['title'];
       if (data['items'][0]['snippet']['tags'].length > 0) {
-        if (data['items'][0]['snippet']['tags'].length > 3) {
+        if (data['items'][0]['snippet']['tags'].length > 4) {
           for (int i = 0; i < 4; i++) {
             videoTitle += data['items'][0]['snippet']['tags'][i] + ' ';
           }
         } else {
-          for (int i = 0;
-              i < data['items'][0]['snippet']['tags'].length - 1;
-              i++) {
-            videoTitle += data['items'][0]['snippet']['tags'][i] + ' ';
-          }
+          data['items'][0]['snippet']['tags'].forEach((tag) => {
+                videoTitle += tag + ' ',
+              });
         }
       } else {
         videoTitle = data['items'][0]['snippet']['title'];
