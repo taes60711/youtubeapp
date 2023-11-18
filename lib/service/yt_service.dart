@@ -45,7 +45,7 @@ class YTService {
         'maxResults': '30',
         'key': API_KEY,
         'regionCode': 'TW',
-        'order':'searchSortUnspecified'
+        'order': 'searchSortUnspecified'
       };
     } else {
       parameters = {
@@ -55,7 +55,7 @@ class YTService {
         'pageToken': _nextPageToken,
         'key': API_KEY,
         'regionCode': 'TW',
-        'order':'searchSortUnspecified'
+        'order': 'searchSortUnspecified'
       };
     }
     Uri uri = Uri.https(_baseUrl, '/youtube/v3/search', parameters);
@@ -85,32 +85,42 @@ class YTService {
     }
   }
 
-
-
-  Future<String> searchVideoDetail(
-      {required String videoId}) async {
+  Future<String> searchVideoDetail({required String videoId}) async {
     Map<String, String> parameters;
-      parameters = {
-        'part': 'snippet',
-        'id': videoId,
-        'key': API_KEY,
-      };
+    parameters = {
+      'part': 'snippet',
+      'id': videoId,
+      'key': API_KEY,
+    };
     Uri uri = Uri.https(_baseUrl, '/youtube/v3/videos', parameters);
     print(uri);
     var response = await http.get(uri);
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
-    
-      print("data  ${data['items'][0]['snippet']['title']}");
-
+      // print("data title ${data['items'][0]['snippet']['title']}");
+      // print("data tag  ${data['items'][0]['snippet']['tags']}");
       String videoTitle = data['items'][0]['snippet']['title'];
-
+      if (data['items'][0]['snippet']['tags'].length > 0) {
+        if (data['items'][0]['snippet']['tags'].length > 3) {
+          for (int i = 0; i < 4; i++) {
+            videoTitle += data['items'][0]['snippet']['tags'][i] + ' ';
+          }
+        } else {
+          for (int i = 0;
+              i < data['items'][0]['snippet']['tags'].length - 1;
+              i++) {
+            videoTitle += data['items'][0]['snippet']['tags'][i] + ' ';
+          }
+        }
+      } else {
+        videoTitle = data['items'][0]['snippet']['title'];
+      }
+      print('videoTitle: ' + videoTitle);
       return videoTitle;
     } else {
       throw json.decode(response.body)['error']['message'];
     }
   }
-
 
   Future<String> ytDownloader(
       YoutubeVideo videoInfo, String inputFileType) async {
@@ -134,7 +144,10 @@ class YTService {
       var stream = yt.videos.streamsClient.get(streamInfo);
 
       const path = '/storage/emulated/0/Download';
-      String videoTitle =videoInfo.title.replaceAll('.', '').replaceAll('/', '').replaceAll('-', '');
+      String videoTitle = videoInfo.title
+          .replaceAll('.', '')
+          .replaceAll('/', '')
+          .replaceAll('-', '');
       var filePath = File("${path}/${videoTitle}.$fileType");
       print(filePath);
       var fileStream = filePath.openWrite();
