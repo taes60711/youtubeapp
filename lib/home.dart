@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/components/loading.dart';
 import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
+import 'package:youtubeapp/components/playerPage/playerPage.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/states/playerState.dart';
 import 'package:youtubeapp/components/playerPage/PlayerSubView/listView.dart';
 
 class Home extends StatelessWidget {
   String _searchKey = "";
+
 
 /**
  * キーワードで動画リストを検索の処理する
@@ -24,11 +26,14 @@ class Home extends StatelessWidget {
         await context.read<VideoPlayerCubit>().searchVideo(videoTitle, 'URL');
         List<YoutubeVideo> searchedVideoItems =
             context.read<VideoPlayerCubit>().state.videoItems;
-        Navigator.of(context).pushNamed("/playerPage", arguments: {
-          'videoInfo': searchedVideoItems[0],
-          'VideoItems': searchedVideoItems,
-          'searchKey': tmpId
-        });
+        Map<String, dynamic> videoObject = {
+          'videoItems': searchedVideoItems,
+          'searchKey': tmpId,
+          'selectedVideo': searchedVideoItems[0],
+          'routerPage': '/playerPage',
+        };
+        VideoList playerPageInfo = VideoList.fromMap(videoObject);
+        playerPage(context, playerPageInfo);
         break;
       case 'NORMAL':
         await context.read<VideoPlayerCubit>().searchVideo(_searchKey, 'URL');

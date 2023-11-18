@@ -25,38 +25,67 @@ void playerPage(BuildContext context, VideoList videoObject) {
 
   showModalBottomSheet<void>(
       context: context,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       enableDrag: true,
-      barrierColor: Colors.black.withOpacity(0.5),
       builder: (context) {
         return Container(
-          height: double.infinity,
-          decoration: const BoxDecoration(
+            height: MediaQuery.of(context).size.height - 61,
             color: Colors.white,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(10),
-            ),
-          ),
-          child: Column(
-            children: [
-              Container(
-                height: 61,
-                color: Colors.black,
+            child: Scaffold(
+              body: Column(
+                children: [
+                  YoutubePlayer(
+                    controller: controller,
+                    onReady: () => {
+                      print("onReady"),
+                    },
+                  ),
+                  VideoListView(
+                    videoListInfo: videoObject,
+                    onChange: videoOnChange,
+                  ),
+                ],
               ),
-              YoutubePlayer(
-                controller: controller,
-                onReady: () => {
-                  print("onReady"),
-                },
+              floatingActionButton: Column(
+                verticalDirection: VerticalDirection.up,
+                children: [
+                  SizedBox(
+                    width: 35,
+                    height: 35,
+                    child: FloatingActionButton(
+                      backgroundColor: const Color.fromARGB(255, 59, 59, 59),
+                      child: const Icon(Icons.arrow_drop_down),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: 35,
+                    height: 35,
+                    child: FloatingActionButton(
+                      backgroundColor: const Color.fromARGB(255, 59, 59, 59),
+                      child: const Icon(Icons.file_download),
+                      onPressed: () {
+                        downloadModal(context, videoObject.selectedVideo);
+                      },
+                    ),
+                  ),
+                ],
               ),
-              DownloadView(selectedVideo: videoObject.selectedVideo),
-              VideoListView(
-                videoListInfo: videoObject,
-                onChange: videoOnChange,
-              )
-            ],
-          ),
+            ));
+      });
+}
+
+void downloadModal(BuildContext context, selectedVideo) {
+  showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      enableDrag: true,
+      builder: (context) {
+        return Container(
+          height: 300,
+          width: MediaQuery.sizeOf(context).width,
+          child: DownloadView(selectedVideo: selectedVideo),
         );
       });
 }

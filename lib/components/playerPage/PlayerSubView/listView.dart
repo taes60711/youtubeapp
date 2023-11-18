@@ -17,6 +17,7 @@ class VideoListView extends StatefulWidget {
 }
 
 class _VideoListViewState extends State<VideoListView> {
+
   Widget listItem(
       BuildContext context, YoutubeVideo videoInfo, VideoList videoListInfo) {
     return Padding(
@@ -96,6 +97,7 @@ class _VideoListViewState extends State<VideoListView> {
   @override
   Widget build(BuildContext context) {
     ScrollController _scrollController = ScrollController();
+
     final YTService _ytService = YTService.instance;
     VideoList? videoListInfo = widget.videoListInfo;
     return Expanded(
@@ -127,3 +129,64 @@ class _VideoListViewState extends State<VideoListView> {
     );
   }
 }
+
+
+
+// DraggableScrollableSheet(
+//           minChildSize: 0.1, // 最小の高さは画面の10%
+//           initialChildSize: 1, // 初めて描画されるときの高さは画面の30%
+//           maxChildSize: 1, // 最大の高さは画面の70%
+//           controller: _scrollController,
+//           builder: (BuildContext context, ScrollController scrollController) {
+//             return Column(
+//               children: [
+//                 ElevatedButton(
+//                   child: Text('Move to top'),
+//                   onPressed: () {
+//                     _scrollController.animateTo(1,
+//                         duration: Duration(seconds: 1),
+//                         curve: Curves.easeInOut);
+//                   },
+//                 ),
+//                 Expanded(
+//                   child: ListView.builder(
+//                       controller: scrollController,
+//                       itemCount: videoListInfo.videoItems.length,
+//                       itemBuilder: (context, index) {
+//                         return listItem(context,
+//                             videoListInfo.videoItems[index], videoListInfo);
+//                       }),
+//                 ),
+//               ],
+//             );
+//           },
+//         ),
+
+
+//  return Expanded(
+//       child: NotificationListener<ScrollNotification>(
+//         onNotification: (ScrollNotification scrollNotification) {
+//           if (scrollNotification is ScrollEndNotification) {
+//             final before = scrollNotification.metrics.extentBefore;
+//             final max = scrollNotification.metrics.maxScrollExtent;
+//             if (before == max) {
+//               _ytService
+//                   .searchVideosFromKeyWord(keyword: videoListInfo.searchKey)
+//                   .then(
+//                     (value) => setState(() {
+//                       videoListInfo.videoItems.addAll(value);
+//                     }),
+//                   );
+//             }
+//           }
+//           return false;
+//         },
+//         child: ListView.builder(
+//             controller: _scrollController,
+//             itemCount: videoListInfo.videoItems.length,
+//             itemBuilder: (context, index) {
+//               return listItem(
+//                   context, videoListInfo.videoItems[index], videoListInfo);
+//             }),
+//       ),
+//     );

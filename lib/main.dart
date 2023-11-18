@@ -18,11 +18,6 @@ class MyApp extends StatelessWidget {
           body: Home(),
         ),
       ),
-      // routes: <String, WidgetBuilder>{
-      //   '/home': (BuildContext context) => new Home(),
-      //   '/playerPage': (BuildContext context) =>
-      //       playerPage(arguments: ModalRoute.of(context)?.settings.arguments)
-      // },
     );
   }
 }
