@@ -12,7 +12,6 @@ import 'package:youtubeapp/components/playerPage/PlayerSubView/listView.dart';
 class Home extends StatelessWidget {
   String _searchKey = "";
 
-
 /**
  * キーワードで動画リストを検索の処理する
  */
@@ -26,10 +25,24 @@ class Home extends StatelessWidget {
         await context.read<VideoPlayerCubit>().searchVideo(videoTitle, 'URL');
         List<YoutubeVideo> searchedVideoItems =
             context.read<VideoPlayerCubit>().state.videoItems;
+
+        Map<String, dynamic> urlVideoMap = {
+          'id': {'videoId': tmpId},
+          'snippet': {
+            'title': '',
+            'thumbnails': {
+              'high': {'url': ''}
+            },
+            'channelTitle': '',
+            'publishedAt': ''
+          },
+        };
+
+        YoutubeVideo urlVideo = YoutubeVideo.fromMap(urlVideoMap, 'video');
         Map<String, dynamic> videoObject = {
           'videoItems': searchedVideoItems,
-          'searchKey': tmpId,
-          'selectedVideo': searchedVideoItems[0],
+          'searchKey': videoTitle,
+          'selectedVideo': urlVideo,
           'routerPage': '/playerPage',
         };
         VideoList playerPageInfo = VideoList.fromMap(videoObject);

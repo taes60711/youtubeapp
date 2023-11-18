@@ -78,7 +78,11 @@ class YTService {
             else if (json['id']['kind'] == "youtube#channel")
               videos.add(YoutubeVideo.fromMap(json, 'channel'))
           });
+      videos.sort((a, b) => (b.publishedAt).compareTo(a.publishedAt));
       videos.sort((a, b) => (a.kind).compareTo(b.kind));
+      videos.forEach((element) {
+        print('data Info : ${element.kind} publishAt ${element.publishedAt}');
+      });
       return videos;
     } else {
       throw json.decode(response.body)['error']['message'];
