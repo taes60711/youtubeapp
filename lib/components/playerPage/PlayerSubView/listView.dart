@@ -17,16 +17,19 @@ class VideoListView extends StatefulWidget {
 }
 
 class _VideoListViewState extends State<VideoListView> {
-
   Widget listItem(
       BuildContext context, YoutubeVideo videoInfo, VideoList videoListInfo) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 2),
       child: videoInfo.kind == 'video'
           ? ElevatedButton(
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.all(0),
-              ),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0) 
+                      ),
+                  padding: const EdgeInsets.all(0),
+                  backgroundColor: Color.fromARGB(255, 33, 32, 32),
+                  elevation: 0,),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,

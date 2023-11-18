@@ -49,7 +49,7 @@ void playerPage(BuildContext context, VideoList videoObject) {
               floatingActionButton: Column(
                 verticalDirection: VerticalDirection.up,
                 children: [
-                  SizedBox(
+                  Container(
                     width: 35,
                     height: 35,
                     child: FloatingActionButton(
@@ -59,7 +59,7 @@ void playerPage(BuildContext context, VideoList videoObject) {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  SizedBox(
+                  Container(
                     width: 35,
                     height: 35,
                     child: FloatingActionButton(
@@ -81,11 +81,19 @@ void downloadModal(BuildContext context, selectedVideo) {
       context: context,
       isScrollControlled: true,
       enableDrag: true,
+      backgroundColor: Colors.transparent,
       builder: (context) {
         return Container(
           height: 300,
-          width: MediaQuery.sizeOf(context).width,
-          child: DownloadView(selectedVideo: selectedVideo),
+          child: Container(
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.vertical(
+             top: Radius.circular(10.0),
+              ),
+              color: Color.fromARGB(255, 248, 248, 248),
+            ),
+            child: DownloadView(selectedVideo: selectedVideo),
+          ),
         );
       });
 }
