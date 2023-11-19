@@ -28,7 +28,7 @@ class _VideoListViewState extends State<VideoListView> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(0)),
                 padding: const EdgeInsets.all(0),
-                backgroundColor: Color.fromARGB(255, 33, 32, 32),
+                backgroundColor: const Color.fromARGB(255, 33, 32, 32),
                 elevation: 0,
               ),
               child: Row(
@@ -83,7 +83,7 @@ class _VideoListViewState extends State<VideoListView> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(0)),
                 padding: const EdgeInsets.all(0),
-                backgroundColor: Color.fromARGB(255, 61, 61, 61),
+                backgroundColor: const Color.fromARGB(255, 61, 61, 61),
                 elevation: 0,
               ),
                 onPressed: () async {

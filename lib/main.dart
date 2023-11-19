@@ -21,8 +21,16 @@ class MyApp extends StatelessWidget {
       ),
       routes: <String, WidgetBuilder>{
         '/home': (BuildContext context) => new Home(),
-        '/channel': (BuildContext context) =>const Channel(),   
+        '/channel': (BuildContext context) => const Channel(),
       },
+      theme: ThemeData(
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        pageTransitionsTheme: const PageTransitionsTheme(
+            builders: <TargetPlatform, PageTransitionsBuilder>{
+              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+              TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
+            }),
+      ),
     );
   }
 }
