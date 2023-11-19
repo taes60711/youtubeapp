@@ -4,6 +4,7 @@ class YoutubeVideo {
   final String title;
   final String thumbnailUrl;
   final String channelTitle;
+  final String publishedAt;
 
   YoutubeVideo({
     required this.kind,
@@ -11,12 +12,15 @@ class YoutubeVideo {
     required this.title,
     required this.thumbnailUrl,
     required this.channelTitle,
+    required this.publishedAt,
   });
 
   factory YoutubeVideo.fromMap(Map<String, dynamic> json, String kind) {
     String id;
     if (kind == 'video') {
       id = json['id']['videoId'];
+    } else if (kind == 'channelVideo') {
+      id = json['contentDetails']['videoId'];
     } else {
       id = json['id']['channelId'];
     }
@@ -26,6 +30,7 @@ class YoutubeVideo {
       title: json['snippet']['title'],
       thumbnailUrl: json['snippet']['thumbnails']['high']['url'],
       channelTitle: json['snippet']['channelTitle'],
+      publishedAt: json['snippet']['publishedAt'],
     );
   }
 }

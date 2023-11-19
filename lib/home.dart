@@ -1,271 +1,116 @@
-import 'dart:async';
-import 'dart:math';
+// ignore_for_file: slash_for_doc_comments, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:youtubeapp/service/yt_service.dart';
-import 'models/video_model.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:youtubeapp/components/loading.dart';
+import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
+import 'package:youtubeapp/components/playerPage/playerPage.dart';
+import 'package:youtubeapp/models/video_model.dart';
+import 'package:youtubeapp/states/playerState.dart';
+import 'package:youtubeapp/components/playerPage/PlayerSubView/listView.dart';
 
-class IsLoadAndMessageController {
-  bool videoList;
-  bool download;
-  String isDlSuc;
-  IsLoadAndMessageController(this.videoList, this.download, this.isDlSuc);
-  IsLoadAndMessageController.initialize()
-      : videoList = false,
-        download = false,
-        isDlSuc = "";
-}
+class Home extends StatelessWidget {
+  String _searchKey = "";
 
-class Home extends StatefulWidget {
-  const Home({super.key});
-  @override
-  State<Home> createState() => _HomeState();
-}
+/**
+ * キーワードで動画リストを検索の処理する
+ */
+  Future<void> searchVideoItems(BuildContext context, String mode) async {
+    switch (mode) {
+      case 'URL':
+        String tmpId = context.read<VideoPlayerCubit>().getVideoId(_searchKey);
+        print("Result ID : ${tmpId}");
+        String videoTitle =
+            await context.read<VideoPlayerCubit>().searchVideoDetail(tmpId);
+        await context.read<VideoPlayerCubit>().searchVideo(videoTitle, 'URL');
+        _searchKey = videoTitle;
+        List<YoutubeVideo> searchedVideoItems =
+            context.read<VideoPlayerCubit>().state.videoItems;
+        int index =
+            searchedVideoItems.indexWhere((element) => element.id == tmpId);
+        var tmpVideo = searchedVideoItems[0];
+        searchedVideoItems[0] = searchedVideoItems[index];
+        searchedVideoItems[index] = tmpVideo;
 
-class _HomeState extends State<Home> {
-  String _text = "";
-  final YoutubePlayerController _controller = YoutubePlayerController(
-    initialVideoId: 'Nt1bCK9Aj1k',
-    flags: const YoutubePlayerFlags(
-      autoPlay: false,
-      mute: false,
-    ),
-  );
-  List<YoutubeVideo> _videoInfo = [];
-  YoutubeVideo? selectedVideo;
-  final IsLoadAndMessageController _loadingController =
-      IsLoadAndMessageController.initialize();
-  late final ScrollController _scrollController = ScrollController();
-  final YTService _ytService = YTService.instance;
-
-  @override
-  void initState() {
-    super.initState();
+        Map<String, dynamic> videoObject = {
+          'videoItems': searchedVideoItems,
+          'searchKey': videoTitle,
+          'selectedVideo': searchedVideoItems[0],
+          'routerPage': '/playerPage',
+        };
+        VideoList playerPageInfo = VideoList.fromMap(videoObject);
+        playerPage(context, playerPageInfo);
+        break;
+      case 'NORMAL':
+        await context.read<VideoPlayerCubit>().searchVideo(_searchKey, 'URL');
+        break;
+    }
   }
 
-  Future<List<YoutubeVideo>> searchVideo() async {
-    List<YoutubeVideo> tmpVideos =
-        await _ytService.searchVideosFromKeyWord(keyword: _text);
-    return tmpVideos;
-  }
-
-  Widget loadingWidget() {
-    return const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: SizedBox(
-        height: 50,
-        width: 50,
-        child: CircularProgressIndicator(
-          strokeWidth: 5,
-          backgroundColor: Colors.black26,
-          color: Colors.black26,
+  Widget searchBar(context) {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+              decoration: const InputDecoration(
+                hintText: 'Enter a search',
+                border: InputBorder.none,
+              ),
+              onChanged: ((value) {
+                _searchKey = value;
+              })),
         ),
-      ),
+        IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () async {
+              if (_searchKey.isNotEmpty) {
+                String mode = '';
+                if (_searchKey.contains('https://')) {
+                  mode = 'URL';
+                } else {
+                  mode = 'NORMAL';
+                }
+                await searchVideoItems(context, mode);
+              }
+            }),
+      ],
     );
-  }
-
-  Widget dlerButton(String text, String downloadType) {
-    return ElevatedButton(
-      child: Text(text),
-      onPressed: () async => {
-        setState(() => _loadingController.download = true),
-        _loadingController.isDlSuc =
-            await _ytService.ytDownloader(selectedVideo!, downloadType),
-        setState(() {
-          _loadingController.download = false;
-        }),
-      },
-    );
-  }
-
-  Widget dlMessage(String isDlSuc) {
-    if (isDlSuc == "sucessfull") {
-      return const Text("Dl SuccessFully");
-    } else if (isDlSuc == "fail") {
-      return const Text("Dl Failed");
-    } else {
-      return const SizedBox();
-    }
-  }
-
-  Widget dlButtonView() {
-    if (selectedVideo != null) {
-      if (!_loadingController.download) {
-        return Column(
-          children: [
-            dlerButton('Download Mp4', "mp4"),
-            dlerButton('Download Mp3', "mp3"),
-            dlMessage(_loadingController.isDlSuc),
-          ],
-        );
-      } else {
-        return loadingWidget();
-      }
-    } else {
-      return const SizedBox();
-    }
-  }
-
-  Widget listItem(YoutubeVideo videoInfo) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: videoInfo.kind == 'video'
-          ? ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.all(0),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 80,
-                    width: 130,
-                    child: Image(
-                      fit: BoxFit.cover,
-                      image: NetworkImage(videoInfo.thumbnailUrl),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            videoInfo.title,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(videoInfo.channelTitle)
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              onPressed: () {
-                _loadingController.isDlSuc = "";
-                setState(() => selectedVideo = videoInfo);
-                _controller.load(videoInfo.id);
-              },
-            )
-          : SizedBox(
-              height: 80,
-              child: Row(
-                children: [
-                  SizedBox(
-                    height: 80,
-                    width: 130,
-                    child: Center(
-                        child: ClipRRect(
-                      borderRadius: BorderRadius.circular(40),
-                      child: Image(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(videoInfo.thumbnailUrl),
-                      ),
-                    )),
-                  ),
-                  Text(videoInfo.channelTitle)
-                ],
-              ),
-            ),
-    );
-  }
-
-  Widget videoListView(bool isLoading) {
-    if (_videoInfo.isEmpty && isLoading) {
-      return loadingWidget();
-    } else {
-      return Expanded(
-        child: Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Column(
-              children: [
-                Expanded(
-                  child: NotificationListener<ScrollNotification>(
-                    onNotification: (ScrollNotification scrollNotification) {
-                      if (scrollNotification is ScrollEndNotification) {
-                        final before = scrollNotification.metrics.extentBefore;
-                        final max = scrollNotification.metrics.maxScrollExtent;
-                        if (before == max && !_loadingController.videoList) {
-                          setState(() => _loadingController.videoList = true);
-                          searchVideo().then((value) {
-                            setState(() {
-                              _videoInfo.addAll(value);
-                              _loadingController.videoList = false;
-                            });
-                          });
-                        }
-                      }
-                      return false;
-                    },
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      itemCount: _videoInfo.length,
-                      itemBuilder: (context, index) {
-                        if (index == _videoInfo.length - 1) {
-                          return Column(
-                            children: [
-                              listItem(_videoInfo[index]),
-                              _loadingController.videoList ? loadingWidget() : Container()
-                            ],
-                          );
-                        } else {
-                          return listItem(_videoInfo[index]);
-                        }
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            )),
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return (Column(
+    return Column(
       children: [
         Container(
           height: 61,
           color: Colors.black,
         ),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Enter a search term',
-                    border: InputBorder.none,
-                  ),
-                  onChanged: ((value) {
-                    setState(() {
-                      _text = value;
-                    });
-                  })),
-            ),
-            ElevatedButton(
-              child: const Text('Search'),
-              onPressed: () async => {
-                setState(() => _loadingController.videoList = true),
-                await searchVideo().then((value) {
-                  setState(() {
-                    _videoInfo = value;
-                    _loadingController.videoList = false;
-                  });
-                }),
-              },
-            ),
-          ],
+        searchBar(context),
+        BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
+          builder: ((context, state) {
+            if (state is LoadingState) {
+              return const LoadingWidget();
+            } else {
+              Map<String, dynamic> videoListObject = {
+                'videoItems': state.videoItems,
+                'searchKey': _searchKey,
+                'routerPage': 'home',
+              };
+              VideoList videoListInfo = VideoList.fromMap(videoListObject);
+              return state.videoItems.isNotEmpty
+                  ? VideoListView(videoListInfo: videoListInfo)
+                  : const Expanded(
+                      child: Center(
+                        child: Icon(
+                          Icons.subtitles_off,
+                          size: 100,
+                        ),
+                      ),
+                    );
+            }
+          }),
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: YoutubePlayer(controller: _controller),
-        ),
-        dlButtonView(),
-        videoListView(_loadingController.videoList),
       ],
-    ));
+    );
   }
 }
