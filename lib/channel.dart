@@ -19,7 +19,9 @@ class _ChannelState extends State<Channel> {
     ScrollController _scrollController = ScrollController();
     final YTService _ytService = YTService.instance;
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 48, 48, 48),
+      ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollNotification) {
           if (scrollNotification is ScrollEndNotification) {

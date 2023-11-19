@@ -79,6 +79,13 @@ class _VideoListViewState extends State<VideoListView> {
           : SizedBox(
               height: 80,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(0)),
+                padding: const EdgeInsets.all(0),
+                backgroundColor: Color.fromARGB(255, 61, 61, 61),
+                elevation: 0,
+              ),
                 onPressed: () async {
                   List<YoutubeVideo> videoItems = await _ytService
                       .searchVideosFromChannel(channelId: videoOrChannelInfo.id);
