@@ -12,6 +12,7 @@ class YTService {
 
   final String _baseUrl = "www.googleapis.com";
   String _nextPageToken = "";
+  String _channelNextPageToken = '';
 
   String getVideoID(String url) {
     int start = 0;
@@ -131,20 +132,22 @@ class YTService {
     String playlistId =
         '${channelId.substring(0, 1)}U${channelId.substring(2)}';
     parameters = {
-      'part': 'part=snippet&part=contentDetails',
+      'part': 'snippet&part=contentDetails',
       'key': API_KEY,
       'playlistId': playlistId,
       'maxResults': '30',
+      'pageToken': _channelNextPageToken,
     };
-    //  contentDetails
 
     String url =
-        'https://$_baseUrl/youtube/v3/playlistItems?${parameters['part']}&key=${parameters['key']}&playlistId=${parameters['playlistId']}&maxResults=${parameters['maxResults']}';
+        'https://$_baseUrl/youtube/v3/playlistItems?part=${parameters['part']}&key=${parameters['key']}&playlistId=${parameters['playlistId']}&maxResults=${parameters['maxResults']}&pageToken=${parameters['pageToken']}';
     Uri uri = Uri.parse(url);
     print(uri);
     var response = await http.get(uri);
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
+
+      _channelNextPageToken = data['nextPageToken'] ?? '';
       print("data${data}");
       List<YoutubeVideo> videos = [];
       data['items'].forEach((json) {

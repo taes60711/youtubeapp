@@ -18,11 +18,12 @@ class VideoListView extends StatefulWidget {
 
 class _VideoListViewState extends State<VideoListView> {
   final YTService _ytService = YTService.instance;
-  Widget listItem(
-      BuildContext context, YoutubeVideo videoInfo, VideoList videoListInfo) {
+  Widget listItem(BuildContext context, YoutubeVideo videoOrChannelInfo,
+      VideoList videoListInfo) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
-      child: videoInfo.kind == 'video'
+      child: videoOrChannelInfo.kind == 'video' ||
+              videoOrChannelInfo.kind == 'channelVideo'
           ? ElevatedButton(
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -40,7 +41,7 @@ class _VideoListViewState extends State<VideoListView> {
                     width: 130,
                     child: Image(
                       fit: BoxFit.cover,
-                      image: NetworkImage(videoInfo.thumbnailUrl),
+                      image: NetworkImage(videoOrChannelInfo.thumbnailUrl),
                     ),
                   ),
                   Expanded(
@@ -50,10 +51,10 @@ class _VideoListViewState extends State<VideoListView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            videoInfo.title,
+                            videoOrChannelInfo.title,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          Text(videoInfo.channelTitle)
+                          Text(videoOrChannelInfo.channelTitle)
                         ],
                       ),
                     ),
@@ -61,13 +62,14 @@ class _VideoListViewState extends State<VideoListView> {
                 ],
               ),
               onPressed: () {
-                if (videoListInfo.routerPage == '/playerPage') {
-                  widget.onChange!(videoInfo);
+                if (videoListInfo.routerPage == '/playerPage' ||
+                    videoListInfo.routerPage == '/channel') {
+                  widget.onChange!(videoOrChannelInfo);
                 } else {
                   Map<String, dynamic> videoObject = {
                     'videoItems': videoListInfo.videoItems,
                     'searchKey': videoListInfo.searchKey,
-                    'selectedVideo': videoInfo,
+                    'selectedVideo': videoOrChannelInfo,
                     'routerPage': '/playerPage',
                   };
                   VideoList playerPageInfo = VideoList.fromMap(videoObject);
@@ -79,10 +81,13 @@ class _VideoListViewState extends State<VideoListView> {
               height: 80,
               child: ElevatedButton(
                 onPressed: () async {
-                  List<YoutubeVideo> videos = await _ytService
-                      .searchVideosFromChannel(channelId: videoInfo.id);
-                  Navigator.pushNamed(context, '/channel',
-                      arguments: {'videoItems': videos});
+                  List<YoutubeVideo> videoItems =
+                      await _ytService.searchVideosFromChannel(
+                          channelId: videoOrChannelInfo.id);
+                  Navigator.pushNamed(context, '/channel', arguments: {
+                    'videoItems': videoItems,
+                    'searchKey': videoOrChannelInfo.id
+                  });
                 },
                 child: Row(
                   children: [
@@ -94,11 +99,11 @@ class _VideoListViewState extends State<VideoListView> {
                         borderRadius: BorderRadius.circular(40),
                         child: Image(
                           fit: BoxFit.cover,
-                          image: NetworkImage(videoInfo.thumbnailUrl),
+                          image: NetworkImage(videoOrChannelInfo.thumbnailUrl),
                         ),
                       )),
                     ),
-                    Text(videoInfo.channelTitle)
+                    Text(videoOrChannelInfo.channelTitle)
                   ],
                 ),
               ),
@@ -110,7 +115,6 @@ class _VideoListViewState extends State<VideoListView> {
   Widget build(BuildContext context) {
     ScrollController _scrollController = ScrollController();
 
-    // final YTService _ytService = YTService.instance;
     VideoList? videoListInfo = widget.videoListInfo;
     return Expanded(
       child: NotificationListener<ScrollNotification>(
