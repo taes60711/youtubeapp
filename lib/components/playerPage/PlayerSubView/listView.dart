@@ -18,12 +18,11 @@ class VideoListView extends StatefulWidget {
 
 class _VideoListViewState extends State<VideoListView> {
   final YTService _ytService = YTService.instance;
-  Widget listItem(BuildContext context, YoutubeVideo videoOrChannelInfo,
-      VideoList videoListInfo) {
+  Widget listItem(
+      BuildContext context, YoutubeVideo videoOrChannelInfo, VideoList videoListInfo) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
-      child: videoOrChannelInfo.kind == 'video' ||
-              videoOrChannelInfo.kind == 'channelVideo'
+      child: videoOrChannelInfo.kind == 'video' || videoOrChannelInfo.kind == 'channelVideo'
           ? ElevatedButton(
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -81,9 +80,8 @@ class _VideoListViewState extends State<VideoListView> {
               height: 80,
               child: ElevatedButton(
                 onPressed: () async {
-                  List<YoutubeVideo> videoItems =
-                      await _ytService.searchVideosFromChannel(
-                          channelId: videoOrChannelInfo.id);
+                  List<YoutubeVideo> videoItems = await _ytService
+                      .searchVideosFromChannel(channelId: videoOrChannelInfo.id);
                   Navigator.pushNamed(context, '/channel', arguments: {
                     'videoItems': videoItems,
                     'searchKey': videoOrChannelInfo.id
@@ -123,13 +121,23 @@ class _VideoListViewState extends State<VideoListView> {
             final before = scrollNotification.metrics.extentBefore;
             final max = scrollNotification.metrics.maxScrollExtent;
             if (before == max) {
-              _ytService
-                  .searchVideosFromKeyWord(keyword: videoListInfo.searchKey)
-                  .then(
-                    (value) => setState(() {
-                      videoListInfo.videoItems.addAll(value);
-                    }),
-                  );
+              if (videoListInfo.routerPage == '/channel') {
+                _ytService
+                    .searchVideosFromChannel(channelId: videoListInfo.searchKey)
+                    .then(
+                      (value) => setState(() {
+                        videoListInfo.videoItems.addAll(value);
+                      }),
+                    );
+              } else {
+                _ytService
+                    .searchVideosFromKeyWord(keyword: videoListInfo.searchKey)
+                    .then(
+                      (value) => setState(() {
+                        videoListInfo.videoItems.addAll(value);
+                      }),
+                    );
+              }
             }
           }
           return false;
