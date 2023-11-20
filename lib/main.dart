@@ -13,16 +13,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: BlocProvider(
-        create: (_) => VideoPlayerCubit(),
-        child: Scaffold(
-          body: Home(),
-        ),
-      ),
-      routes: <String, WidgetBuilder>{
-        '/home': (BuildContext context) => new Home(),
-        '/channel': (BuildContext context) => const Channel(),
-      },
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
         pageTransitionsTheme: const PageTransitionsTheme(
@@ -31,6 +21,16 @@ class MyApp extends StatelessWidget {
               TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
             }),
       ),
+      home: BlocProvider(
+        create: (_) => VideoListCubit(),
+        child: Scaffold(
+          body: Home(),
+        ),
+      ),
+      routes: <String, WidgetBuilder>{
+        '/home': (BuildContext context) => Home(),
+        '/channel': (BuildContext context) => const Channel(),
+      },
     );
   }
 }

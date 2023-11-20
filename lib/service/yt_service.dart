@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import '../models/video_model.dart';
+import 'package:youtubeapp/models/video_model.dart';
 import '../utilities/keys.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
@@ -36,7 +36,7 @@ class YTService {
     return tmpId;
   }
 
-  Future<List<YoutubeVideo>> searchVideosFromKeyWord(
+  Future<List<YoutubeItem>> searchVideosFromKeyWord(
       {required String keyword, String? mode}) async {
     Map<String, String> parameters;
     if (mode == 'URL') {
@@ -68,19 +68,19 @@ class YTService {
       print("data${data}");
       List<dynamic> videosJson = data['items'];
 
-      List<YoutubeVideo> videos = [];
+      List<YoutubeItem> videos = [];
 
       videosJson.forEach((json) => {
             if (json['id']['kind'] == "youtube#video")
               {
                 // if (json['id']['videoId'] != keyword)
-                videos.add(YoutubeVideo.fromMap(json, 'video'))
+                videos.add(YoutubeItem.fromMap(json, 'video'))
               }
             else if (json['id']['kind'] == "youtube#channel")
-              videos.add(YoutubeVideo.fromMap(json, 'channel'))
+              videos.add(YoutubeItem.fromMap(json, 'channel'))
           });
       // videos.sort((a, b) => (b.publishedAt).compareTo(a.publishedAt));
-      videos.sort((a, b) => (a.kind).compareTo(b.kind));
+      videos.sort((a, b) => (a.kind!).compareTo(b.kind!));
       for (int i = 0; i < videos.length; i++) {
         print('index : ${i} data Info : ${videos[i].kind} id ${videos[i].id}');
       }
@@ -126,7 +126,7 @@ class YTService {
     }
   }
 
-  Future<List<YoutubeVideo>> searchVideosFromChannel(
+  Future<List<YoutubeItem>> searchVideosFromChannel(
       {required String channelId}) async {
     Map<String, String> parameters;
     String playlistId =
@@ -149,9 +149,9 @@ class YTService {
 
       _channelNextPageToken = data['nextPageToken'] ?? '';
       print("data${data}");
-      List<YoutubeVideo> videos = [];
+      List<YoutubeItem> videos = [];
       data['items'].forEach((json) {
-        videos.add(YoutubeVideo.fromMap(json, 'channelVideo'));
+        videos.add(YoutubeItem.fromMap(json, 'channelVideo'));
       });
 
       return videos;
@@ -161,7 +161,7 @@ class YTService {
   }
 
   Future<String> ytDownloader(
-      YoutubeVideo videoInfo, String inputFileType) async {
+      YoutubeItem videoInfo, String inputFileType) async {
     print("youtubeDownload start");
     try {
       var yt = YoutubeExplode();

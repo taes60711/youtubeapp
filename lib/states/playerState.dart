@@ -2,37 +2,37 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 
-abstract class VideoPlayerState {
+abstract class VideoListState {
   dynamic videoItems = [];
   dynamic searchKey = '';
-  VideoPlayerState({this.videoItems, this.searchKey});
+  VideoListState({this.videoItems, this.searchKey});
 }
 
-class PlayerInitialState extends VideoPlayerState {
-  PlayerInitialState({required List<YoutubeVideo> videoItems})
+class ListInitialState extends VideoListState {
+  ListInitialState({required List<YoutubeItem> videoItems})
       : super(videoItems: videoItems);
 }
 
-class LoadingState extends VideoPlayerState {}
+class LoadingState extends VideoListState {}
 
-class SearchSuccesState extends VideoPlayerState {
-  SearchSuccesState({required List<YoutubeVideo> videoItems})
+class SearchSuccesState extends VideoListState {
+  SearchSuccesState({required List<YoutubeItem> videoItems})
       : super(videoItems: videoItems);
 }
 
-class SearchErrorState extends VideoPlayerState {
+class SearchErrorState extends VideoListState {
   final String message;
   SearchErrorState({required this.message});
 }
 
-class VideoPlayerCubit extends Cubit<VideoPlayerState> {
-  VideoPlayerCubit() : super(PlayerInitialState(videoItems: []));
+class VideoListCubit extends Cubit<VideoListState> {
+  VideoListCubit() : super(ListInitialState(videoItems: []));
   final YTService _ytService = YTService.instance;
 
   Future<void> searchVideo(String keyword, String mode) async {
     emit(LoadingState());
     try {
-      List<YoutubeVideo> searchResult = await _ytService
+      List<YoutubeItem> searchResult = await _ytService
           .searchVideosFromKeyWord(keyword: keyword, mode: mode);
 
       emit(SearchSuccesState(videoItems: searchResult));

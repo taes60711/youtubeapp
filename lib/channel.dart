@@ -15,7 +15,7 @@ class _ChannelState extends State<Channel> {
   @override
   Widget build(BuildContext context) {
     dynamic args = ModalRoute.of(context)!.settings.arguments;
-    List<YoutubeVideo> videoItems = args['videoItems'];
+    List<YoutubeItem> videoItems = args['videoItems'];
     ScrollController _scrollController = ScrollController();
     final YTService _ytService = YTService.instance;
     return Scaffold(
@@ -89,7 +89,7 @@ class _ChannelState extends State<Channel> {
                       'routerPage': '/channel',
                     };
                     VideoList playerPageInfo = VideoList.fromMap(videoObject);
-                    playerPage(context, playerPageInfo);
+                    // playerPage(context, playerPageInfo);
                   },
                 ),
               );

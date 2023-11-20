@@ -5,7 +5,7 @@ import 'package:youtubeapp/service/yt_service.dart';
 
 class DownloadView extends StatefulWidget {
   DownloadView({super.key,  this.selectedVideo});
-  YoutubeVideo? selectedVideo;
+  YoutubeItem? selectedVideo;
 
   @override
   State<DownloadView> createState() => _DownloadViewState();
@@ -25,7 +25,7 @@ class _DownloadViewState extends State<DownloadView> {
   }
 
   Widget dlerButton(
-      String text, String downloadType, YoutubeVideo selectedVideo) {
+      String text, String downloadType, YoutubeItem selectedVideo) {
     return ElevatedButton(
       child: Text(text),
       onPressed: () async => {

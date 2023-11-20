@@ -1,16 +1,16 @@
 import 'package:youtubeapp/models/video_model.dart';
 
 class VideoList {
-  YoutubeVideo? selectedVideo;
-  List<YoutubeVideo> videoItems;
+  YoutubeItem? selectedVideo;
+  List<YoutubeItem> videoItems;
   String searchKey;
-  String? routerPage;
+  String routerPage;
 
   VideoList({
     this.selectedVideo,
     required this.videoItems,
     required this.searchKey,
-    this.routerPage,
+    required this.routerPage,
   });
 
   factory VideoList.fromMap(Map<String, dynamic> map) {
