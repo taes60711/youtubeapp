@@ -161,91 +161,72 @@
 //   }
 // }
 
-// DraggableScrollableSheet(
-//           minChildSize: 0.1, // 最小の高さは画面の10%
-//           initialChildSize: 1, // 初めて描画されるときの高さは画面の30%
-//           maxChildSize: 1, // 最大の高さは画面の70%
-//           controller: _scrollController,
-//           builder: (BuildContext context, ScrollController scrollController) {
-//             return Column(
-//               children: [
-//                 ElevatedButton(
-//                   child: Text('Move to top'),
-//                   onPressed: () {
-//                     _scrollController.animateTo(1,
-//                         duration: Duration(seconds: 1),
-//                         curve: Curves.easeInOut);
-//                   },
-//                 ),
-//                 Expanded(
-//                   child: ListView.builder(
-//                       controller: scrollController,
-//                       itemCount: videoListInfo.videoItems.length,
-//                       itemBuilder: (context, index) {
-//                         return listItem(context,
-//                             videoListInfo.videoItems[index], videoListInfo);
-//                       }),
-//                 ),
-//               ],
-//             );
-//           },
-//         ),
-
-//  return Expanded(
-//       child: NotificationListener<ScrollNotification>(
-//         onNotification: (ScrollNotification scrollNotification) {
-//           if (scrollNotification is ScrollEndNotification) {
-//             final before = scrollNotification.metrics.extentBefore;
-//             final max = scrollNotification.metrics.maxScrollExtent;
-//             if (before == max) {
-//               _ytService
-//                   .searchVideosFromKeyWord(keyword: videoListInfo.searchKey)
-//                   .then(
-//                     (value) => setState(() {
-//                       videoListInfo.videoItems.addAll(value);
-//                     }),
-//                   );
-//             }
-//           }
-//           return false;
-//         },
-//         child: ListView.builder(
-//             controller: _scrollController,
-//             itemCount: videoListInfo.videoItems.length,
-//             itemBuilder: (context, index) {
-//               return listItem(
-//                   context, videoListInfo.videoItems[index], videoListInfo);
-//             }),
-//       ),
-//     );
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/components/loading.dart';
 import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
-import 'package:youtubeapp/states/playerState.dart';
+import 'package:youtubeapp/models/video_model.dart';
+import 'package:youtubeapp/states/videoListState.dart';
 
 class VideosListView extends StatelessWidget {
-  VideosListView({super.key, required this.videoListInfo});
+  const VideosListView({super.key, required this.videoListInfo});
 
-  VideoList videoListInfo;
+  final VideoList videoListInfo;
 
   @override
   Widget build(BuildContext context) {
-    
-    return Column(
-      children: [
-       
-        BlocBuilder<VideoListCubit, VideoListState>(
-          builder: ((context, state) {
-            if (state is LoadingState) {
-              return const LoadingWidget();
-            } else {
-              return Container();
-            }
-          }),
-        )
-      ],
+    List<YoutubeItem> videoItems = videoListInfo.videoItems;
+    ScrollController scrollController = ScrollController();
+    var cubit = context.read<VideoListCubit>();
+    return Expanded(
+      child: Column(
+        children: [
+          Expanded(
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification scrollNotification) {
+                if (scrollNotification is ScrollEndNotification) {
+                  final before = scrollNotification.metrics.extentBefore;
+                  final max = scrollNotification.metrics.maxScrollExtent;
+                  if (before == max && cubit.state is! AddLoadingState) {
+                    cubit.addListVideo(videoItems,videoListInfo.searchKey);
+                  }
+                }
+                return false;
+              },
+              child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: videoItems.length,
+                  itemBuilder: (context, index) {
+                    return ElevatedButton(
+                        onPressed: (() {}),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              height: 80,
+                              width: 130,
+                              child: Image(
+                                fit: BoxFit.cover,
+                                image: NetworkImage(
+                                    videoItems[index].thumbnailUrl),
+                              ),
+                            ),
+                            Expanded(child: Text(videoItems[index].title))
+                          ],
+                        ));
+                  }),
+            ),
+          ),
+          BlocBuilder<VideoListCubit, VideoListState>(
+            builder: ((context, state) {
+              if (state is AddLoadingState) {
+                return const LoadingWidget();
+              } else {
+                return Container();
+              }
+            }),
+          )
+        ],
+      ),
     );
   }
 }

@@ -121,7 +121,7 @@ import 'package:youtubeapp/components/listView/listView.dart';
 import 'package:youtubeapp/components/loading.dart';
 import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
-import 'package:youtubeapp/states/playerState.dart';
+import 'package:youtubeapp/states/videoListState.dart';
 
 class Home extends StatelessWidget {
   Home({super.key});
