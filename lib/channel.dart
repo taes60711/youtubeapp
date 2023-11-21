@@ -22,78 +22,129 @@ class _ChannelState extends State<Channel> {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 48, 48, 48),
       ),
-      body: NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollNotification) {
-          if (scrollNotification is ScrollEndNotification) {
-            final before = scrollNotification.metrics.extentBefore;
-            final max = scrollNotification.metrics.maxScrollExtent;
-            if (before == max) {
-              _ytService
-                  .searchVideosFromChannel(channelId: args['searchKey'])
-                  .then(
-                    (value) => setState(() {
-                      videoItems.addAll(value);
-                    }),
-                  );
+      body: Container(
+        color: const Color.fromARGB(255, 27, 27, 27),
+        child: NotificationListener<ScrollNotification>(
+          onNotification: (ScrollNotification scrollNotification) {
+            if (scrollNotification is ScrollEndNotification) {
+              final before = scrollNotification.metrics.extentBefore;
+              final max = scrollNotification.metrics.maxScrollExtent;
+              if (before == max) {
+                _ytService
+                    .searchVideosFromChannel(channelId: args['searchKey'])
+                    .then(
+                      (value) => setState(() {
+                        videoItems.addAll(value);
+                      }),
+                    );
+              }
             }
-          }
-          return false;
-        },
-        child: ListView.builder(
-            itemCount: videoItems.length,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 2),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(0)),
-                    padding: const EdgeInsets.all(0),
-                    backgroundColor: Color.fromARGB(255, 33, 32, 32),
-                    elevation: 0,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 80,
-                        width: 130,
-                        child: Image(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(videoItems[index].thumbnailUrl),
-                        ),
+            return false;
+          },
+          child: ListView.builder(
+              itemCount: videoItems.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding:
+                      const EdgeInsets.only(bottom: 1, left: 10, right: 10),
+                  child: Container(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                            color: Color.fromARGB(255, 143, 143, 143),
+                            width: .5),
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                videoItems[index].title,
-                                overflow: TextOverflow.ellipsis,
+                    ),
+                    child: videoItems[index].kind == 'video'
+                        ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0)),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 0),
+                              backgroundColor:
+                                  const Color.fromARGB(0, 154, 103, 103),
+                              elevation: 0,
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: 80,
+                                  width: 130,
+                                  child: Image(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(
+                                        videoItems[index].thumbnailUrl),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          videoItems[index].title,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Text(videoItems[index].channelTitle)
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            onPressed: () {
+                              Map<String, dynamic> videoObject = {
+                                'videoItems': videoItems,
+                                'searchKey': args['searchKey'],
+                                'selectedVideo': videoItems[index],
+                                'routerPage': '/channel',
+                              };
+                              VideoList playerPageInfo =
+                                  VideoList.fromMap(videoObject);
+                              // playerPage(context, playerPageInfo);
+                            },
+                          )
+                        : Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Container(
+                              height: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: const Color.fromARGB(255, 68, 86, 147),
                               ),
-                              Text(videoItems[index].channelTitle)
-                            ],
-                          ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical:8),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      height: 80,
+                                      width: 130,
+                                      child: Center(
+                                          child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(40),
+                                        child: Image(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(
+                                              videoItems[index].thumbnailUrl),
+                                        ),
+                                      )),
+                                    ),
+                                    Text(videoItems[index].channelTitle)
+                                  ],
+                                ),
+                              ),
+                            ),
                         ),
-                      )
-                    ],
                   ),
-                  onPressed: () {
-                    Map<String, dynamic> videoObject = {
-                      'videoItems': videoItems,
-                      'searchKey': args['searchKey'],
-                      'selectedVideo': videoItems[index],
-                      'routerPage': '/channel',
-                    };
-                    VideoList playerPageInfo = VideoList.fromMap(videoObject);
-                    // playerPage(context, playerPageInfo);
-                  },
-                ),
-              );
-            }),
+                );
+              }),
+        ),
       ),
     );
   }

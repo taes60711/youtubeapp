@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 
