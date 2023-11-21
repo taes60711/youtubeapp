@@ -98,14 +98,36 @@
 //       });
 // }
 
-
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
 
 class playerPage extends StatelessWidget {
   const playerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    dynamic args = ModalRoute.of(context)!.settings.arguments;
+    VideoList selectedVideoInfo = args['selectedVideoInfo'];
+    late YoutubePlayerController controller = YoutubePlayerController(
+      initialVideoId: selectedVideoInfo.selectedVideo!.id as String,
+      flags: const YoutubePlayerFlags(
+        autoPlay: true,
+        mute: false,
+      ),
+    );
+
+
+
+    return Column(
+      children: [
+        YoutubePlayer(
+          controller: controller,
+          onReady: () => {
+            print("onReady"),
+          },
+        ),
+      ],
+    );
   }
 }

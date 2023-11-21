@@ -165,6 +165,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/components/loading.dart';
 import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
+import 'package:youtubeapp/components/playerPage/playerPage.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/states/videoListState.dart';
 
@@ -220,7 +221,26 @@ class VideosListView extends StatelessWidget {
                                       const Color.fromARGB(0, 154, 103, 103),
                                   elevation: 0,
                                 ),
-                                onPressed: (() {}),
+                                onPressed: (() {
+                                  var selectedVideoInfo = VideoList(
+                                      videoItems: videoItems,
+                                      searchKey: videoListInfo.searchKey,
+                                      selectedVideo: videoItems[index],
+                                      routerPage: '/playerPage');
+                                  // Navigator.of(context).push(
+                                  //   MaterialPageRoute(
+                                  //     builder: ((context) => BlocProvider.value(
+                                  //           value: VideoListCubit(),
+                                  //           child: const playerPage(),
+                                  //         )),
+                                  //   ),
+                                    
+                                  // );
+                                  Navigator.pushNamed(context, '/playerPage',
+                                      arguments: {
+                                        'selectedVideoInfo': selectedVideoInfo
+                                      });
+                                }),
                                 child: Row(
                                   children: [
                                     SizedBox(

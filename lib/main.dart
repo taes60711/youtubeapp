@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/channel.dart';
+import 'package:youtubeapp/components/playerPage/playerPage.dart';
 import 'package:youtubeapp/home.dart';
 import 'package:youtubeapp/states/videoListState.dart';
 
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/home': (BuildContext context) => Home(),
         '/channel': (BuildContext context) => const Channel(),
+        '/playerPage': (BuildContext context) => const playerPage(),
       },
     );
   }
