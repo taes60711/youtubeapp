@@ -234,7 +234,7 @@ class VideosListView extends StatelessWidget {
                                   //           child: const playerPage(),
                                   //         )),
                                   //   ),
-                                    
+
                                   // );
                                   Navigator.pushNamed(context, '/playerPage',
                                       arguments: {
@@ -273,7 +273,8 @@ class VideosListView extends StatelessWidget {
                                       ),
                                     ),
                                   ],
-                                ))
+                                ),
+                              )
                             : SizedBox(
                                 height: 80,
                                 child: ElevatedButton(

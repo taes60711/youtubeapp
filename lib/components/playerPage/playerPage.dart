@@ -117,17 +117,18 @@ class playerPage extends StatelessWidget {
       ),
     );
 
-
-
-    return Column(
-      children: [
-        YoutubePlayer(
-          controller: controller,
-          onReady: () => {
-            print("onReady"),
-          },
-        ),
-      ],
+    return Container(
+      color: const Color.fromARGB(255, 27, 27, 27),
+      child: Column(
+        children: [
+          YoutubePlayer(
+            controller: controller,
+            onReady: () => {
+              print("onReady"),
+            },
+          ),
+        ],
+      ),
     );
   }
 }
