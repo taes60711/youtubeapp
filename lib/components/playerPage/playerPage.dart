@@ -118,9 +118,9 @@ class PlayerPage extends StatelessWidget {
         DraggableScrollableController();
     var cubit = context.read<VideoListCubit>();
     List<YoutubeItem> videoItems = cubit.state.videoItems;
-
     dynamic args = ModalRoute.of(context)!.settings.arguments;
     VideoList selectedVideoInfo = args['selectedVideoInfo'];
+      int startIndex = videoItems.indexWhere((video) => video.id == selectedVideoInfo.selectedVideo!.id);
     late YoutubePlayerController controller = YoutubePlayerController(
       initialVideoId: selectedVideoInfo.selectedVideo!.id as String,
       flags: const YoutubePlayerFlags(
@@ -133,105 +133,12 @@ class PlayerPage extends StatelessWidget {
       controller.load(chnagedVideo.id as String);
     }
 
+
+
     return Container(
         color: const Color.fromARGB(255, 27, 27, 27),
         child: BlocBuilder<VideoListCubit, VideoListState>(
           builder: ((context, state) {
-            // return Column(
-            //   children: [
-            //     YoutubePlayer(
-            //       controller: controller,
-            //       onReady: () => {
-            //         inspect("onReady"),
-            //       },
-            //     ),
-            //     Expanded(
-            //       child: DraggableScrollableSheet(
-            //         minChildSize: 0.1,
-            //         initialChildSize: 1,
-            //         maxChildSize: 1,
-            //         controller: _scrollController,
-            //         builder: (BuildContext context,
-            //             ScrollController scrollController) {
-            //           return Scaffold(
-            //             body: Container(
-            //               color: Color.fromARGB(255, 119, 73, 73),
-            //               child: Column(
-            //                 children: [
-            //                   Expanded(
-            //                     child: ListView.builder(
-            //                         controller: scrollController,
-            //                         itemCount: videoItems.length,
-            //                         itemBuilder: (context, index) {
-            //                           return Padding(
-            //                             padding: const EdgeInsets.only(bottom: 1, left: 10, right: 10),
-            //                             child: ElevatedButton(
-            //                               style: ElevatedButton.styleFrom(
-            //                                 shape: RoundedRectangleBorder(
-            //                                     borderRadius:
-            //                                         BorderRadius.circular(0)),
-            //                                 padding: const EdgeInsets.symmetric(
-            //                                     horizontal: 0),
-            //                                 backgroundColor: const Color.fromARGB(
-            //                                     0, 154, 103, 103),
-            //                                 elevation: 0,
-            //                               ),
-            //                               onPressed: (() {}),
-            //                               child: Row(
-            //                                 children: [
-            //                                   SizedBox(
-            //                                     height: 80,
-            //                                     width: 130,
-            //                                     child: Image(
-            //                                       fit: BoxFit.cover,
-            //                                       image: NetworkImage(
-            //                                           videoItems[index]
-            //                                               .thumbnailUrl),
-            //                                     ),
-            //                                   ),
-            //                                   Expanded(
-            //                                     child: Padding(
-            //                                       padding:
-            //                                           const EdgeInsets.all(8.0),
-            //                                       child: Column(
-            //                                         crossAxisAlignment:
-            //                                             CrossAxisAlignment.start,
-            //                                         children: [
-            //                                           Padding(
-            //                                             padding:
-            //                                                 const EdgeInsets.only(
-            //                                                     bottom: 8),
-            //                                             child: Text(
-            //                                               videoItems[index].title,
-            //                                               overflow: TextOverflow
-            //                                                   .ellipsis,
-            //                                             ),
-            //                                           ),
-            //                                           Text(
-            //                                             videoItems[index]
-            //                                                 .channelTitle,
-            //                                             overflow:
-            //                                                 TextOverflow.ellipsis,
-            //                                           )
-            //                                         ],
-            //                                       ),
-            //                                     ),
-            //                                   ),
-            //                                 ],
-            //                               ),
-            //                             ),
-            //                           );
-            //                         }),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ),
-            //           );
-            //         },
-            //       ),
-            //     ),
-            //   ],
-            // );
             return Column(
               children: [
                 YoutubePlayer(
@@ -240,7 +147,8 @@ class PlayerPage extends StatelessWidget {
                     inspect("onReady"),
                   },
                   onEnded: (metaData) {
-                    inspect(metaData);
+                    startIndex += 1;
+                    controller.load(videoItems[startIndex].id as String);
                   },
                 ),
                 Expanded(

@@ -339,8 +339,6 @@ class VideosListView extends StatelessWidget {
         ],
       );
     }
-
-    print('object${videoListInfo.routerPage}');
     return videoListInfo.routerPage == '/playerPage'
         ? DraggableScrollableSheet(
             minChildSize: 0.8,

@@ -4,7 +4,7 @@ import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 
 class DownloadView extends StatefulWidget {
-  DownloadView({super.key,  this.selectedVideo});
+  DownloadView({super.key, this.selectedVideo});
   YoutubeItem? selectedVideo;
 
   @override
@@ -28,6 +28,12 @@ class _DownloadViewState extends State<DownloadView> {
       String text, String downloadType, YoutubeItem selectedVideo) {
     return ElevatedButton(
       child: Text(text),
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        backgroundColor: const Color.fromARGB(255, 68, 86, 147),
+        elevation: 0,
+      ),
       onPressed: () async => {
         loadingChange(
             'download', _ytService.ytDownloader, [selectedVideo, downloadType]),
