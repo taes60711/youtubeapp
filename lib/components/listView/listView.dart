@@ -165,7 +165,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/components/loading.dart';
 import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
-import 'package:youtubeapp/components/playerPage/playerPage.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/states/videoListState.dart';
 
@@ -176,9 +175,9 @@ class VideosListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<YoutubeItem> videoItems = videoListInfo.videoItems;
     ScrollController scrollController = ScrollController();
     var cubit = context.read<VideoListCubit>();
+    List<YoutubeItem> videoItems = cubit.state.videoItems;
     return Expanded(
       child: Column(
         children: [
@@ -223,20 +222,10 @@ class VideosListView extends StatelessWidget {
                                 ),
                                 onPressed: (() {
                                   var selectedVideoInfo = VideoList(
-                                      videoItems: videoItems,
                                       searchKey: videoListInfo.searchKey,
                                       selectedVideo: videoItems[index],
                                       routerPage: '/playerPage');
-                                  // Navigator.of(context).push(
-                                  //   MaterialPageRoute(
-                                  //     builder: ((context) => BlocProvider.value(
-                                  //           value: VideoListCubit(),
-                                  //           child: const playerPage(),
-                                  //         )),
-                                  //   ),
-
-                                  // );
-                                  Navigator.pushNamed(context, '/playerPage',
+                                  Navigator.of(context).pushNamed('/playerPage',
                                       arguments: {
                                         'selectedVideoInfo': selectedVideoInfo
                                       });

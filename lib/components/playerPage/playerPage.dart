@@ -99,11 +99,13 @@
 // }
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
+import 'package:youtubeapp/states/videoListState.dart';
 
-class playerPage extends StatelessWidget {
-  const playerPage({super.key});
+class PlayerPage extends StatelessWidget {
+  const PlayerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -118,17 +120,21 @@ class playerPage extends StatelessWidget {
     );
 
     return Container(
-      color: const Color.fromARGB(255, 27, 27, 27),
-      child: Column(
-        children: [
-          YoutubePlayer(
-            controller: controller,
-            onReady: () => {
-              print("onReady"),
-            },
-          ),
-        ],
-      ),
-    );
+        color: const Color.fromARGB(255, 27, 27, 27),
+        child: BlocBuilder<VideoListCubit, VideoListState>(
+          builder: ((context, state) {
+            print(state.videoItems);
+            return Column(
+              children: [
+                YoutubePlayer(
+                  controller: controller,
+                  onReady: () => {
+                    print("onReady"),
+                  },
+                ),
+              ],
+            );
+          }),
+        ));
   }
 }

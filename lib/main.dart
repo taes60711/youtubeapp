@@ -10,6 +10,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  final VideoListCubit _videoListCubit = VideoListCubit();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,16 +23,19 @@ class MyApp extends StatelessWidget {
               TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
             }),
       ),
-      home: BlocProvider(
-        create: (_) => VideoListCubit(),
-        child: Scaffold(
-          body: Home(),
-        ),
-      ),
       routes: <String, WidgetBuilder>{
-        '/home': (BuildContext context) => Home(),
-        '/channel': (BuildContext context) => const Channel(),
-        '/playerPage': (BuildContext context) => const playerPage(),
+        '/': (BuildContext context) => BlocProvider.value(
+              value: _videoListCubit,
+              child: Home(),
+            ),
+        '/channel': (BuildContext context) => BlocProvider.value(
+              value: _videoListCubit,
+              child: Channel(),
+            ),
+        '/playerPage': (BuildContext context) => BlocProvider.value(
+              value: _videoListCubit,
+              child: PlayerPage(),
+            ),
       },
     );
   }

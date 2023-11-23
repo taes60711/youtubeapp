@@ -27,7 +27,6 @@ class Home extends StatelessWidget {
         searchedVideoItems[index] = tmpVideo;
 
         VideoList(
-            videoItems: searchedVideoItems,
             searchKey: videoTitle,
             selectedVideo: searchedVideoItems[0],
             routerPage: '/playerPage');
@@ -51,6 +50,7 @@ class Home extends StatelessWidget {
               borderRadius: BorderRadius.circular(40),
             ),
             child: TextField(
+              textInputAction: TextInputAction.go,
               decoration: const InputDecoration(
                 contentPadding: EdgeInsets.only(left: 10, bottom: 14),
                 hintText: 'Enter a search',
@@ -62,6 +62,18 @@ class Home extends StatelessWidget {
               style: const TextStyle(
                 color: Color.fromARGB(255, 143, 143, 143),
               ),
+              onSubmitted: (value) async {
+                print(searchKey);
+                if (searchKey.isNotEmpty) {
+                  String keyWordMode = '';
+                  if (searchKey.contains('https://')) {
+                    keyWordMode = 'URL';
+                  } else {
+                    keyWordMode = 'NORMAL';
+                  }
+                  await searchVideoItems(context, keyWordMode);
+                }
+              },
               onChanged: ((value) {
                 searchKey = value;
               }),
@@ -87,46 +99,43 @@ class Home extends StatelessWidget {
       ],
     );
   }
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: const Color.fromARGB(255, 27, 27, 27),
-      child: Column(
-      children: [
-        Container(
-          height: 40,
-          color: const Color.fromARGB(255, 27, 27, 27),
+    return Scaffold(
+      body: Container(
+        color: const Color.fromARGB(255, 27, 27, 27),
+        child: Column(
+          children: [
+            Container(
+              height: 40,
+              color: const Color.fromARGB(255, 27, 27, 27),
+            ),
+            searchBar(context),
+            BlocBuilder<VideoListCubit, VideoListState>(
+              builder: ((context, state) {
+                if (state is LoadingState) {
+                  return const LoadingWidget();
+                } else {
+                  VideoList videoListInfo = VideoList(
+                      searchKey: searchKey,
+                      routerPage: '/home');
+                  return state.videoItems.isNotEmpty
+                      ? VideosListView(videoListInfo: videoListInfo)
+                      : const Expanded(
+                          child: Center(
+                            child: Icon(
+                              Icons.subtitles_off,
+                              size: 100,
+                              color: Color.fromARGB(255, 143, 143, 143),
+                            ),
+                          ),
+                        );
+                }
+              }),
+            )
+          ],
         ),
-        searchBar(context),
-        BlocBuilder<VideoListCubit, VideoListState>(
-          builder: ((context, state) {
-            if (state is LoadingState) {
-              return const LoadingWidget();
-            } else {
-              VideoList videoListInfo = VideoList(
-                  videoItems: state.videoItems,
-                  searchKey: searchKey,
-                  routerPage: '/home');
-              return state.videoItems.isNotEmpty
-                  ? VideosListView(videoListInfo: videoListInfo)
-                  : const Expanded(
-                      child: Center(
-                        child: Icon(
-                          Icons.subtitles_off,
-                          size: 100,
-                          color: Color.fromARGB(255, 143, 143, 143),
-                        ),
-                      ),
-                    );
-            }
-          }),
-        ),
-      ],
-    )
+      ),
     );
   }
 }
-
-
-
