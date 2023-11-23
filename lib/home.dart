@@ -99,6 +99,7 @@ class Home extends StatelessWidget {
       ],
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,11 +117,12 @@ class Home extends StatelessWidget {
                 if (state is LoadingState) {
                   return const LoadingWidget();
                 } else {
-                  VideoList videoListInfo = VideoList(
-                      searchKey: searchKey,
-                      routerPage: '/home');
+                  VideoList videoListInfo =
+                      VideoList(searchKey: searchKey, routerPage: '/home');
                   return state.videoItems.isNotEmpty
-                      ? VideosListView(videoListInfo: videoListInfo)
+                      ? Expanded(
+                          child: VideosListView(videoListInfo: videoListInfo),
+                        )
                       : const Expanded(
                           child: Center(
                             child: Icon(
