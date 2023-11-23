@@ -104,6 +104,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:youtubeapp/components/listView/listView.dart';
+import 'package:youtubeapp/components/playerPage/PlayerSubView/downloadView.dart';
 import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/states/videoListState.dart';
@@ -243,12 +244,20 @@ class PlayerPage extends StatelessWidget {
                   },
                 ),
                 Expanded(
-                  child: VideosListView(
-                    videoListInfo: selectedVideoInfo,
-                    onChange: videoOnChange,
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: DownloadView(
+                          selectedVideo: selectedVideoInfo.selectedVideo,
+                        ),
+                      ),
+                      VideosListView(
+                        videoListInfo: selectedVideoInfo,
+                        onChange: videoOnChange,
+                      ),
+                    ],
                   ),
                 )
-
               ],
             );
           }),
