@@ -43,7 +43,7 @@ class ChannelItem extends YoutubeItem {
       required super.channelTitle,
       required super.publishedAt});
 
-  factory ChannelItem.fromMap(Map<String, dynamic> json, String kind) {
+  factory ChannelItem.fromMap(Map<String, dynamic> json) {
     
     return ChannelItem(
       channelVideoId: json['contentDetails']['videoId'],

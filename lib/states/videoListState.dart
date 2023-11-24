@@ -5,7 +5,8 @@ import 'package:youtubeapp/service/yt_service.dart';
 abstract class VideoListState {
   dynamic videoItems = [];
   dynamic searchKey = '';
-  VideoListState({this.videoItems, this.searchKey});
+  dynamic channelVideoItems = [];
+  VideoListState({this.videoItems, this.searchKey, this.channelVideoItems});
 }
 
 class ListInitialState extends VideoListState {
@@ -16,13 +17,14 @@ class ListInitialState extends VideoListState {
 class LoadingState extends VideoListState {}
 
 class AddLoadingState extends VideoListState {
-    AddLoadingState({required List<YoutubeItem> videoItems})
+  AddLoadingState({required List<YoutubeItem> videoItems})
       : super(videoItems: videoItems);
 }
 
 class SearchSuccesState extends VideoListState {
-  SearchSuccesState({required List<YoutubeItem> videoItems})
-      : super(videoItems: videoItems);
+  SearchSuccesState(
+      {required List<YoutubeItem> videoItems, required String searchKey})
+      : super(videoItems: videoItems, searchKey: searchKey);
 }
 
 class SearchErrorState extends VideoListState {
@@ -39,20 +41,21 @@ class VideoListCubit extends Cubit<VideoListState> {
     try {
       List<YoutubeItem> searchResult = await _ytService.searchVideosFromKeyWord(
           keyword: keyword, mode: mode);
-      emit(SearchSuccesState(videoItems: searchResult));
+      emit(SearchSuccesState(videoItems: searchResult, searchKey: keyword));
     } catch (error) {
       emit(SearchErrorState(message: error.toString()));
       rethrow;
     }
   }
 
-  Future<void> addListVideo(List<YoutubeItem> videoItems,String keyword) async {
-     emit(AddLoadingState(videoItems: videoItems));
+  Future<void> addListVideo(
+      List<YoutubeItem> videoItems, String keyword) async {
+    emit(AddLoadingState(videoItems: videoItems));
     try {
       List<YoutubeItem> searchResult = await _ytService.searchVideosFromKeyWord(
           keyword: keyword, mode: 'keyWord');
       videoItems.addAll(searchResult);
-      emit(SearchSuccesState(videoItems: videoItems));
+      emit(SearchSuccesState(videoItems: videoItems, searchKey: keyword));
     } catch (error) {
       emit(SearchErrorState(message: error.toString()));
       rethrow;

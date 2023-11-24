@@ -126,7 +126,7 @@ class YTService {
     }
   }
 
-  Future<List<YoutubeItem>> searchVideosFromChannel(
+  Future<List<ChannelItem>> searchVideosFromChannel(
       {required String channelId}) async {
     Map<String, String> parameters;
     String playlistId =
@@ -149,9 +149,9 @@ class YTService {
 
       _channelNextPageToken = data['nextPageToken'] ?? '';
       print("data${data}");
-      List<YoutubeItem> videos = [];
+      List<ChannelItem> videos = [];
       data['items'].forEach((json) {
-        videos.add(YoutubeItem.fromMap(json, 'channelVideo'));
+        videos.add(ChannelItem.fromMap(json));
       });
 
       return videos;
