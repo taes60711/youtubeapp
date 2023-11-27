@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print, avoid_function_literals_in_foreach_calls
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:youtubeapp/models/video_model.dart';
@@ -79,7 +80,7 @@ class YTService {
             else if (json['id']['kind'] == "youtube#channel")
               videos.add(YoutubeItem.fromMap(json, 'channel'))
           });
-          
+
       videos.sort((a, b) => (a.kind!).compareTo(b.kind!));
       for (int i = 0; i < videos.length; i++) {
         print('index : ${i} data Info : ${videos[i].kind} id ${videos[i].id}');
@@ -177,7 +178,6 @@ class YTService {
         fileType = "mp4";
         streamInfo = streamManifest.muxed.withHighestBitrate();
       }
-      // final int fileSize = streamInfo.size.totalBytes;
 
       var stream = yt.videos.streamsClient.get(streamInfo);
 
@@ -186,15 +186,70 @@ class YTService {
           .replaceAll('.', '')
           .replaceAll('/', '')
           .replaceAll('-', '');
-      var filePath = File("${path}/${videoTitle}.$fileType");
-      print(filePath);
+      var filePath = await File("${path}/${videoTitle}.$fileType");
+      print('DownLoad File Path :$filePath');
+
+      var len = streamManifest.muxed.first.size.totalBytes;
+      var count = 0;
       var fileStream = filePath.openWrite();
-      await stream.pipe(fileStream);
+      await for (final data in stream) {
+        count += data.length;
+        var progress = ((count / len) * 100).ceil();
+        print(progress);
+        fileStream.add(data);
+      }
+      await fileStream.close();
+      // await stream.pipe(fileStream);
       print("Download Sucessfull");
       return "sucessfull";
     } catch (e) {
       print(e);
       return "fail";
     }
+  }
+
+
+    Stream<int> ss(
+      YoutubeItem videoInfo, String inputFileType) async* {
+    print("youtubeDownload start");
+
+      var yt = YoutubeExplode();
+      var streamInfo;
+      String fileType;
+      StreamManifest streamManifest =
+          await yt.videos.streamsClient.getManifest(videoInfo.id);
+
+      if (inputFileType == "mp3") {
+        fileType = inputFileType;
+        streamInfo = streamManifest.audioOnly.withHighestBitrate();
+      } else {
+        fileType = "mp4";
+        streamInfo = streamManifest.muxed.withHighestBitrate();
+      }
+
+      var stream = yt.videos.streamsClient.get(streamInfo);
+
+
+      const path = '/storage/emulated/0/Download';
+      String videoTitle = videoInfo.title
+          .replaceAll('.', '')
+          .replaceAll('/', '')
+          .replaceAll('-', '');
+      var filePath = await File("${path}/${videoTitle}.$fileType");
+      print('DownLoad File Path :$filePath ${await filePath.length()}');
+
+      var len =await filePath.length();
+      var count = 0;
+      var fileStream = filePath.openWrite();
+      await for (final data in stream) {
+        count += data.length;
+        print('count $count , length ${len} ${(count / len)}');
+        var progress = ((count / len) * 100).ceil();
+        yield progress;
+        fileStream.add(data);
+      }
+      await fileStream.close();
+      print("Download Sucessfull");
+
   }
 }

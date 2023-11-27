@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
@@ -94,13 +95,15 @@ class _ChannelState extends State<Channel> {
                           ],
                         ),
                         onPressed: () {
-                          var selectedVideo = YoutubeItem(
+
+                          YoutubeItem selectedVideo = YoutubeItem(
                               title: videoItems[index].title,
                               thumbnailUrl: videoItems[index].thumbnailUrl,
                               channelTitle: videoItems[index].channelTitle,
                               publishedAt: videoItems[index].publishedAt,
                               id: videoItems[index].channelVideoId);
-                          var selectedVideoInfo = VideoList(
+                              
+                          VideoList selectedVideoInfo = VideoList(
                               searchKey: args['searchKey'],
                               selectedVideo: selectedVideo,
                               routerPage: '/playerPage');

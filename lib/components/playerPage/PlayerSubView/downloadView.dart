@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:youtubeapp/components/loading.dart';
 import 'package:youtubeapp/models/video_model.dart';
@@ -13,6 +15,7 @@ class DownloadView extends StatefulWidget {
 
 class _DownloadViewState extends State<DownloadView> {
   final YTService _ytService = YTService.instance;
+  int progressNum = 0;
   Map<String, bool> isLoading = {
     'download': false,
   };
@@ -27,23 +30,45 @@ class _DownloadViewState extends State<DownloadView> {
   Widget dlerButton(
       String text, String downloadType, YoutubeItem selectedVideo) {
     return ElevatedButton(
-      child: Text(text),
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         padding: const EdgeInsets.symmetric(horizontal: 5),
         backgroundColor: const Color.fromARGB(255, 68, 86, 147),
         elevation: 0,
       ),
-      onPressed: () async => {
-        loadingChange(
-            'download', _ytService.ytDownloader, [selectedVideo, downloadType]),
+      onPressed: () async {
+        progressNum = 0;
+        final stream = _ytService.ss(selectedVideo, downloadType);
+        setState(() => isLoading['download'] = true);
+        await for (int i in stream) {
+          setState(() {
+            progressNum = i;
+          });
+        }
+        setState(() => isLoading['download'] = false);
       },
+      child: Text(text),
     );
   }
 
   Widget dlButtonView(selectedVideo) {
     if (isLoading['download'] as bool) {
-      return const LoadingWidget();
+      return Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            children: [
+              const LoadingWidget(),
+              Text(
+                '${progressNum.toString()}%',
+                style: const TextStyle(
+                    color: Color.fromARGB(255, 143, 143, 143), fontSize: 20),
+              ),
+            ],
+          ),
+        ),
+      );
     } else {
       return Column(
         children: [

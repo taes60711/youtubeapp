@@ -1,8 +1,8 @@
 class YoutubeItem {
   final String? kind;
-  final String? id;
+  late final String? id;
   final String title;
-  final String thumbnailUrl;
+  late final String thumbnailUrl;
   final String channelTitle;
   final String publishedAt;
 
