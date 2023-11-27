@@ -1,7 +1,9 @@
 // ignore_for_file: avoid_print, avoid_function_literals_in_foreach_calls
 import 'dart:convert';
 import 'dart:io';
+import 'package:external_path/external_path.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import '../utilities/keys.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -165,7 +167,7 @@ class YTService {
 
     var yt = YoutubeExplode();
     var streamInfo;
-    var fileSize;
+    int fileSize = 0;
     String fileType;
     StreamManifest streamManifest =
         await yt.videos.streamsClient.getManifest(videoInfo.id);
@@ -181,8 +183,16 @@ class YTService {
     }
 
     var stream = yt.videos.streamsClient.get(streamInfo);
-
-    const path = '/storage/emulated/0/Download';
+    String path = '';
+    if (Platform.isAndroid) {
+      path = await ExternalPath.getExternalStoragePublicDirectory(
+          ExternalPath.DIRECTORY_DOWNLOADS);
+      //'/storage/emulated/0/Download';
+    } else if (Platform.isIOS) {
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      path = appDocDir.path;
+    }
+    
     String videoTitle = videoInfo.title
         .replaceAll('.', '')
         .replaceAll('/', '')
@@ -191,7 +201,7 @@ class YTService {
     print('DownLoad File Path :$filePath ');
 
     var count = 0;
-    var fileStream = filePath.openWrite(mode: FileMode.writeOnlyAppend);
+    var fileStream = filePath.openWrite();
     await for (final data in stream) {
       count += data.length;
       print('count $count , length ${fileSize} ${(count / fileSize)}');
