@@ -38,7 +38,7 @@ class _DownloadViewState extends State<DownloadView> {
       ),
       onPressed: () async {
         progressNum = 0;
-        final stream = _ytService.ss(selectedVideo, downloadType);
+        final stream = _ytService.ytDownloader(selectedVideo, downloadType);
         setState(() => isLoading['download'] = true);
         await for (int i in stream) {
           setState(() {

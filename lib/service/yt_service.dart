@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_print, avoid_function_literals_in_foreach_calls
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:youtubeapp/models/video_model.dart';
@@ -161,55 +160,7 @@ class YTService {
     }
   }
 
-  Future<String> ytDownloader(
-      YoutubeItem videoInfo, String inputFileType) async {
-    print("youtubeDownload start");
-    try {
-      var yt = YoutubeExplode();
-      var streamInfo;
-      String fileType;
-      StreamManifest streamManifest =
-          await yt.videos.streamsClient.getManifest(videoInfo.id);
-
-      if (inputFileType == "mp3") {
-        fileType = inputFileType;
-        streamInfo = streamManifest.audioOnly.withHighestBitrate();
-      } else {
-        fileType = "mp4";
-        streamInfo = streamManifest.muxed.withHighestBitrate();
-      }
-
-      var stream = yt.videos.streamsClient.get(streamInfo);
-
-      const path = '/storage/emulated/0/Download';
-      String videoTitle = videoInfo.title
-          .replaceAll('.', '')
-          .replaceAll('/', '')
-          .replaceAll('-', '');
-      var filePath = await File("${path}/${videoTitle}.$fileType");
-      print('DownLoad File Path :$filePath');
-
-      var len = streamManifest.muxed.first.size.totalBytes;
-      var count = 0;
-      var fileStream = filePath.openWrite();
-      await for (final data in stream) {
-        count += data.length;
-        var progress = ((count / len) * 100).ceil();
-        print(progress);
-        fileStream.add(data);
-      }
-      await fileStream.close();
-      // await stream.pipe(fileStream);
-      print("Download Sucessfull");
-      return "sucessfull";
-    } catch (e) {
-      print(e);
-      return "fail";
-    }
-  }
-
-
-    Stream<int> ss(
+    Stream<int> ytDownloader(
       YoutubeItem videoInfo, String inputFileType) async* {
     print("youtubeDownload start");
 
