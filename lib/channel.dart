@@ -87,7 +87,10 @@ class _ChannelState extends State<Channel> {
                                       videoItems[index].title,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    Text(videoItems[index].channelTitle),
+                                    Text(
+                                      videoItems[index].channelTitle,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -95,14 +98,13 @@ class _ChannelState extends State<Channel> {
                           ],
                         ),
                         onPressed: () {
-
                           YoutubeItem selectedVideo = YoutubeItem(
                               title: videoItems[index].title,
                               thumbnailUrl: videoItems[index].thumbnailUrl,
                               channelTitle: videoItems[index].channelTitle,
                               publishedAt: videoItems[index].publishedAt,
                               id: videoItems[index].channelVideoId);
-                              
+
                           VideoList selectedVideoInfo = VideoList(
                               searchKey: args['searchKey'],
                               selectedVideo: selectedVideo,

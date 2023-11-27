@@ -160,47 +160,46 @@ class YTService {
     }
   }
 
-    Stream<int> ytDownloader(
-      YoutubeItem videoInfo, String inputFileType) async* {
+  Stream<int> ytDownloader(YoutubeItem videoInfo, String inputFileType) async* {
     print("youtubeDownload start");
 
-      var yt = YoutubeExplode();
-      var streamInfo;
-      String fileType;
-      StreamManifest streamManifest =
-          await yt.videos.streamsClient.getManifest(videoInfo.id);
+    var yt = YoutubeExplode();
+    var streamInfo;
+    var fileSize;
+    String fileType;
+    StreamManifest streamManifest =
+        await yt.videos.streamsClient.getManifest(videoInfo.id);
 
-      if (inputFileType == "mp3") {
-        fileType = inputFileType;
-        streamInfo = streamManifest.audioOnly.withHighestBitrate();
-      } else {
-        fileType = "mp4";
-        streamInfo = streamManifest.muxed.withHighestBitrate();
-      }
+    if (inputFileType == "mp3") {
+      fileType = inputFileType;
+      streamInfo = streamManifest.audioOnly.withHighestBitrate();
+      fileSize = streamManifest.audioOnly.last.size.totalBytes;
+    } else {
+      fileType = "mp4";
+      streamInfo = streamManifest.muxed.withHighestBitrate();
+      fileSize = streamManifest.muxed.last.size.totalBytes;
+    }
 
-      var stream = yt.videos.streamsClient.get(streamInfo);
+    var stream = yt.videos.streamsClient.get(streamInfo);
 
+    const path = '/storage/emulated/0/Download';
+    String videoTitle = videoInfo.title
+        .replaceAll('.', '')
+        .replaceAll('/', '')
+        .replaceAll('-', '');
+    File filePath = File("${path}/${videoTitle}.$fileType");
+    print('DownLoad File Path :$filePath ');
 
-      const path = '/storage/emulated/0/Download';
-      String videoTitle = videoInfo.title
-          .replaceAll('.', '')
-          .replaceAll('/', '')
-          .replaceAll('-', '');
-      var filePath = await File("${path}/${videoTitle}.$fileType");
-      print('DownLoad File Path :$filePath ${await filePath.length()}');
-
-      var len =await filePath.length();
-      var count = 0;
-      var fileStream = filePath.openWrite();
-      await for (final data in stream) {
-        count += data.length;
-        print('count $count , length ${len} ${(count / len)}');
-        var progress = ((count / len) * 100).ceil();
-        yield progress;
-        fileStream.add(data);
-      }
-      await fileStream.close();
-      print("Download Sucessfull");
-
+    var count = 0;
+    var fileStream = filePath.openWrite(mode: FileMode.writeOnlyAppend);
+    await for (final data in stream) {
+      count += data.length;
+      print('count $count , length ${fileSize} ${(count / fileSize)}');
+      var progress = ((count / fileSize) * 100).ceil();
+      yield progress;
+      fileStream.add(data);
+    }
+    await fileStream.close();
+    print("Download Sucessfull");
   }
 }
