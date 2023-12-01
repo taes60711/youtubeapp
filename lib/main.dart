@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/channel.dart';
-import 'package:youtubeapp/components/playerPage/playerPage.dart';
+import 'package:youtubeapp/components/playerPage/player_page.dart';
 import 'package:youtubeapp/home.dart';
 import 'package:youtubeapp/states/videoListState.dart';
 
@@ -11,6 +11,9 @@ void main() {
 
 class MyApp extends StatelessWidget {
   final VideoListCubit _videoListCubit = VideoListCubit();
+
+  MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

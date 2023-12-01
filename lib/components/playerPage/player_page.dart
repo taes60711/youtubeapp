@@ -103,8 +103,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import 'package:youtubeapp/components/listView/listView.dart';
-import 'package:youtubeapp/components/playerPage/PlayerSubView/downloadView.dart';
+import 'package:youtubeapp/components/listView/list_view.dart';
+import 'package:youtubeapp/components/playerPage/PlayerSubView/download_view.dart';
 import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/states/videoListState.dart';
@@ -114,8 +114,6 @@ class PlayerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DraggableScrollableController _scrollController =
-        DraggableScrollableController();
     var cubit = context.read<VideoListCubit>();
     List<YoutubeItem> videoItems = cubit.state.videoItems;
     dynamic args = ModalRoute.of(context)!.settings.arguments;

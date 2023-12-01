@@ -1,10 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:youtubeapp/components/listView/listView.dart';
+import 'package:youtubeapp/components/listView/list_view.dart';
 import 'package:youtubeapp/components/loading.dart';
 import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/states/videoListState.dart';
+import 'package:youtubeapp/utilities/style_config.dart';
 
 class Home extends StatelessWidget {
   Home({super.key});
@@ -16,7 +19,7 @@ class Home extends StatelessWidget {
     switch (mode) {
       case 'URL':
         String tmpId = cubit.getVideoId(searchKey);
-        print("Result ID : ${tmpId}");
+        log("Result ID : $tmpId");
         String videoTitle = await cubit.searchVideoDetail(tmpId);
         await cubit.searchVideo(videoTitle, 'URL');
         List<YoutubeItem> searchedVideoItems = cubit.state.videoItems;
@@ -63,7 +66,7 @@ class Home extends StatelessWidget {
                 color: Color.fromARGB(255, 143, 143, 143),
               ),
               onSubmitted: (value) async {
-                print(searchKey);
+                log(searchKey);
                 if (searchKey.isNotEmpty) {
                   String keyWordMode = '';
                   if (searchKey.contains('https://')) {
@@ -102,14 +105,17 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log('Home');
+    double height = MediaQuery.of(context).size.height;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
-        color: const Color.fromARGB(255, 27, 27, 27),
+        color: normalBgColor,
         child: Column(
           children: [
             Container(
               height: 40,
-              color: const Color.fromARGB(255, 27, 27, 27),
+              color: normalBgColor,
             ),
             searchBar(context),
             BlocBuilder<VideoListCubit, VideoListState>(
@@ -123,13 +129,19 @@ class Home extends StatelessWidget {
                       ? Expanded(
                           child: VideosListView(videoListInfo: videoListInfo),
                         )
-                      : const Expanded(
-                          child: Center(
-                            child: Icon(
-                              Icons.subtitles_off,
-                              size: 100,
-                              color: Color.fromARGB(255, 143, 143, 143),
-                            ),
+                      : SizedBox(
+                          height: height - 40,
+                          child: const Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.subtitles_off,
+                                size: 100,
+                                color: Color.fromARGB(255, 143, 143, 143),
+                              ),
+                              Text('NoInformation'),
+                            ],
                           ),
                         );
                 }

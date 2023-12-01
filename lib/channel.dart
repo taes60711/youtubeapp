@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
@@ -16,7 +15,7 @@ class _ChannelState extends State<Channel> {
   Widget build(BuildContext context) {
     dynamic args = ModalRoute.of(context)!.settings.arguments;
     List<ChannelItem> videoItems = args['videoItems'];
-    final YTService _ytService = YTService.instance;
+    final YTService ytService = YTService.instance;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 48, 48, 48),
@@ -29,7 +28,7 @@ class _ChannelState extends State<Channel> {
               final before = scrollNotification.metrics.extentBefore;
               final max = scrollNotification.metrics.maxScrollExtent;
               if (before == max) {
-                _ytService
+                ytService
                     .searchVideosFromChannel(channelId: args['searchKey'])
                     .then(
                       (value) => setState(() {

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:youtubeapp/components/loading.dart';
 import 'package:youtubeapp/models/video_model.dart';
@@ -61,7 +59,7 @@ class _DownloadViewState extends State<DownloadView> {
             children: [
               const LoadingWidget(),
               Text(
-                '${progressNum.toString()}%',
+                '$progressNum %',
                 style: const TextStyle(
                     color: Color.fromARGB(255, 143, 143, 143), fontSize: 20),
               ),
