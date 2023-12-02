@@ -5,6 +5,7 @@ import 'package:youtubeapp/components/playerPage/player_page.dart';
 import 'package:youtubeapp/home.dart';
 import 'package:youtubeapp/states/videoListState.dart';
 
+
 void main() {
   runApp(MyApp());
 }
@@ -16,7 +17,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

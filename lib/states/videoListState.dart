@@ -5,13 +5,13 @@ import 'package:youtubeapp/service/yt_service.dart';
 abstract class VideoListState {
   dynamic videoItems = [];
   dynamic searchKey = '';
-  dynamic channelVideoItems = [];
-  VideoListState({this.videoItems, this.searchKey, this.channelVideoItems});
+  VideoListState({this.videoItems, this.searchKey});
 }
 
 class ListInitialState extends VideoListState {
-  ListInitialState({required List<YoutubeItem> videoItems})
-      : super(videoItems: videoItems);
+  ListInitialState(
+      {required List<YoutubeItem> videoItems, required String searchKey})
+      : super(videoItems: videoItems, searchKey: searchKey);
 }
 
 class LoadingState extends VideoListState {}
@@ -33,7 +33,7 @@ class SearchErrorState extends VideoListState {
 }
 
 class VideoListCubit extends Cubit<VideoListState> {
-  VideoListCubit() : super(ListInitialState(videoItems: []));
+  VideoListCubit() : super(ListInitialState(videoItems: [], searchKey: ''));
   final YTService _ytService = YTService.instance;
 
   Future<void> searchVideo(String keyword, String mode) async {
@@ -73,9 +73,9 @@ class VideoListCubit extends Cubit<VideoListState> {
     }
   }
 
-  String getVideoId(String _searchKey) {
+  String getVideoId(String searchKey) {
     try {
-      var videoId = _ytService.getVideoID(_searchKey);
+      var videoId = _ytService.getVideoID(searchKey);
       return videoId;
     } catch (error) {
       emit(SearchErrorState(message: error.toString()));

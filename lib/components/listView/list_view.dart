@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/components/loading.dart';
@@ -18,6 +20,8 @@ class VideosListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String inRoutePath = ModalRoute.of(context)!.settings.name ?? '/';
+    log('list_view route: $inRoutePath');
     DraggableScrollableController draggableScrollableController =
         DraggableScrollableController();
     var cubit = context.read<VideoListCubit>();
@@ -71,7 +75,7 @@ class VideosListView extends StatelessWidget {
                                       searchKey: videoListInfo.searchKey,
                                       selectedVideo: videoItems[index],
                                       routerPage: '/playerPage');
-                                  if (videoListInfo.routerPage == '/home') {
+                                  if (inRoutePath == '/') {
                                     Navigator.of(context)
                                         .pushNamed('/playerPage', arguments: {
                                       'selectedVideoInfo': selectedVideoInfo
@@ -174,7 +178,7 @@ class VideosListView extends StatelessWidget {
           BlocBuilder<VideoListCubit, VideoListState>(
             builder: ((context, state) {
               if (state is AddLoadingState) {
-                return LoadingWidget();
+                return const LoadingWidget();
               } else {
                 return Container();
               }
@@ -184,7 +188,7 @@ class VideosListView extends StatelessWidget {
       );
     }
 
-    return videoListInfo.routerPage == '/playerPage'
+    return inRoutePath == '/playerPage'
         ? DraggableScrollableSheet(
             minChildSize: 0.8,
             initialChildSize: 1,

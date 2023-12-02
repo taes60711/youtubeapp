@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:youtubeapp/components/playerPage/video_list_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
@@ -13,6 +14,7 @@ class Channel extends StatefulWidget {
 class _ChannelState extends State<Channel> {
   @override
   Widget build(BuildContext context) {
+    log('Channel ${ModalRoute.of(context)!.settings.name}');
     dynamic args = ModalRoute.of(context)!.settings.arguments;
     List<ChannelItem> videoItems = args['videoItems'];
     final YTService ytService = YTService.instance;

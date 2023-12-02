@@ -6,12 +6,16 @@ import 'package:youtubeapp/components/loading.dart';
 import 'package:youtubeapp/components/playerPage/video_list_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/states/videoListState.dart';
+import 'package:youtubeapp/utilities/screen_size.dart';
 import 'package:youtubeapp/utilities/style_config.dart';
 
 class Home extends StatelessWidget {
   Home({super.key});
   String searchKey = "";
-
+  final double searchBarHeight = 35;
+  final double searchBarPaddingBottom = 14;
+  final double topBarHeight = 40;
+  late double bgHeight = ScreenSize().height - topBarHeight - searchBarHeight - searchBarPaddingBottom  ;
   //キーワードで動画リストを検索の処理する
   Future<void> searchVideoItems(BuildContext context, String mode) async {
     VideoListCubit cubit = context.read<VideoListCubit>();
@@ -62,7 +66,8 @@ class Home extends StatelessWidget {
       children: [
         Expanded(
           child: Container(
-            height: 35,
+            height: searchBarHeight,
+            margin:const EdgeInsets.only(left: 15),
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: const Color.fromARGB(31, 162, 162, 162),
@@ -71,7 +76,8 @@ class Home extends StatelessWidget {
             child: TextField(
               textInputAction: TextInputAction.go,
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.only(left: 10, bottom: 14),
+                contentPadding:
+                    EdgeInsets.only(left: 10, bottom: searchBarPaddingBottom),
                 hintText: '搜尋',
                 hintStyle: TextStyle(
                   color: normalTextColor,
@@ -102,11 +108,12 @@ class Home extends StatelessWidget {
     );
   }
 
+
+
   @override
   Widget build(BuildContext context) {
-    log('Home');
+    log('HomePage route: ${ModalRoute.of(context)!.settings.name}');
 
-    double height = MediaQuery.of(context).size.height;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -114,7 +121,7 @@ class Home extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              height: 40,
+              height: topBarHeight,
               color: normalBgColor,
             ),
             searchBar(context),
@@ -122,8 +129,8 @@ class Home extends StatelessWidget {
               builder: ((context, state) {
                 if (state is LoadingState) {
                   return SizedBox(
-                    height: height - 88,
-                    child: Center(
+                    height: bgHeight,
+                    child: const Center(
                       child: LoadingWidget(
                         circularSize: 70,
                         strokeWidth: 10,
@@ -138,7 +145,7 @@ class Home extends StatelessWidget {
                           child: VideosListView(videoListInfo: videoListInfo),
                         )
                       : SizedBox(
-                          height: height - 88,
+                          height: bgHeight,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,

@@ -4,8 +4,8 @@ import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 
 class DownloadView extends StatefulWidget {
-  DownloadView({super.key, this.selectedVideo});
-  YoutubeItem? selectedVideo;
+  final YoutubeItem? selectedVideo;
+  const DownloadView({super.key, this.selectedVideo});
 
   @override
   State<DownloadView> createState() => _DownloadViewState();
@@ -57,7 +57,7 @@ class _DownloadViewState extends State<DownloadView> {
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
-               LoadingWidget(),
+              const LoadingWidget(),
               Text(
                 '$progressNum %',
                 style: const TextStyle(

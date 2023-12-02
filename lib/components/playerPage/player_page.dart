@@ -13,11 +13,13 @@ class PlayerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log('PlayerPage ${ModalRoute.of(context)!.settings.name}');
     var cubit = context.read<VideoListCubit>();
     List<YoutubeItem> videoItems = cubit.state.videoItems;
     dynamic args = ModalRoute.of(context)!.settings.arguments;
     VideoList selectedVideoInfo = args['selectedVideoInfo'];
-      int startIndex = videoItems.indexWhere((video) => video.id == selectedVideoInfo.selectedVideo!.id);
+    int startIndex = videoItems
+        .indexWhere((video) => video.id == selectedVideoInfo.selectedVideo!.id);
     late YoutubePlayerController controller = YoutubePlayerController(
       initialVideoId: selectedVideoInfo.selectedVideo!.id as String,
       flags: const YoutubePlayerFlags(
@@ -30,8 +32,6 @@ class PlayerPage extends StatelessWidget {
       controller.load(chnagedVideo.id as String);
     }
 
-
-
     return Container(
         color: const Color.fromARGB(255, 27, 27, 27),
         child: BlocBuilder<VideoListCubit, VideoListState>(
@@ -41,7 +41,7 @@ class PlayerPage extends StatelessWidget {
                 YoutubePlayer(
                   controller: controller,
                   onReady: () => {
-                    inspect("onReady"),
+                    log("onReady"),
                   },
                   onEnded: (metaData) {
                     startIndex += 1;
