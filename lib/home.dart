@@ -1,10 +1,9 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/components/listView/list_view.dart';
 import 'package:youtubeapp/components/loading.dart';
-import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
+import 'package:youtubeapp/components/playerPage/video_list_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/states/videoListState.dart';
 import 'package:youtubeapp/utilities/style_config.dart';
@@ -22,7 +21,7 @@ class Home extends StatelessWidget {
         log("Result ID : $tmpId");
         String videoTitle = await cubit.searchVideoDetail(tmpId);
         await cubit.searchVideo(videoTitle, 'URL');
-        
+
         List<YoutubeItem> searchedVideoItems = cubit.state.videoItems;
         int index = searchedVideoItems.indexWhere((video) => video.id == tmpId);
         void searchResultOrder(
@@ -46,6 +45,19 @@ class Home extends StatelessWidget {
 
   //検索バー
   Widget searchBar(context) {
+    Future<void> doSearch(searchKey) async {
+      log(searchKey);
+      if (searchKey.isNotEmpty) {
+        String keyWordMode = '';
+        if (searchKey.contains('https://')) {
+          keyWordMode = 'URL';
+        } else {
+          keyWordMode = 'NORMAL';
+        }
+        await searchVideoItems(context, keyWordMode);
+      }
+    }
+
     return Row(
       children: [
         Expanded(
@@ -60,7 +72,7 @@ class Home extends StatelessWidget {
               textInputAction: TextInputAction.go,
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.only(left: 10, bottom: 14),
-                hintText: 'Enter a search',
+                hintText: '搜尋',
                 hintStyle: TextStyle(
                   color: normalTextColor,
                 ),
@@ -70,16 +82,7 @@ class Home extends StatelessWidget {
                 color: normalTextColor,
               ),
               onSubmitted: (value) async {
-                log(searchKey);
-                if (searchKey.isNotEmpty) {
-                  String keyWordMode = '';
-                  if (searchKey.contains('https://')) {
-                    keyWordMode = 'URL';
-                  } else {
-                    keyWordMode = 'NORMAL';
-                  }
-                  await searchVideoItems(context, keyWordMode);
-                }
+                await doSearch(searchKey);
               },
               onChanged: ((value) {
                 searchKey = value;
@@ -93,15 +96,7 @@ class Home extends StatelessWidget {
               color: normalTextColor,
             ),
             onPressed: () async {
-              if (searchKey.isNotEmpty) {
-                String keyWordMode = '';
-                if (searchKey.contains('https://')) {
-                  keyWordMode = 'URL';
-                } else {
-                  keyWordMode = 'NORMAL';
-                }
-                await searchVideoItems(context, keyWordMode);
-              }
+              await doSearch(searchKey);
             }),
       ],
     );
@@ -126,7 +121,15 @@ class Home extends StatelessWidget {
             BlocBuilder<VideoListCubit, VideoListState>(
               builder: ((context, state) {
                 if (state is LoadingState) {
-                  return const LoadingWidget();
+                  return SizedBox(
+                    height: height - 88,
+                    child: Center(
+                      child: LoadingWidget(
+                        circularSize: 70,
+                        strokeWidth: 10,
+                      ),
+                    ),
+                  );
                 } else {
                   VideoList videoListInfo =
                       VideoList(searchKey: searchKey, routerPage: '/home');
@@ -146,7 +149,7 @@ class Home extends StatelessWidget {
                                 color: normalTextColor,
                               ),
                               Text(
-                                'No Video',
+                                '沒有影片資訊...',
                                 style: TextStyle(color: normalTextColor),
                               ),
                             ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
+import 'package:youtubeapp/components/playerPage/video_list_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 

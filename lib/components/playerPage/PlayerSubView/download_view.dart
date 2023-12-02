@@ -57,7 +57,7 @@ class _DownloadViewState extends State<DownloadView> {
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
-              const LoadingWidget(),
+               LoadingWidget(),
               Text(
                 '$progressNum %',
                 style: const TextStyle(

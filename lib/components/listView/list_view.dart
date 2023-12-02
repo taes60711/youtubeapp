@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/components/loading.dart';
-import 'package:youtubeapp/components/playerPage/VideoList_model.dart';
+import 'package:youtubeapp/components/playerPage/video_list_model.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 import 'package:youtubeapp/states/videoListState.dart';
@@ -174,7 +174,7 @@ class VideosListView extends StatelessWidget {
           BlocBuilder<VideoListCubit, VideoListState>(
             builder: ((context, state) {
               if (state is AddLoadingState) {
-                return const LoadingWidget();
+                return LoadingWidget();
               } else {
                 return Container();
               }
