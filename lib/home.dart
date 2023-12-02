@@ -54,16 +54,16 @@ class Home extends StatelessWidget {
             ),
             child: TextField(
               textInputAction: TextInputAction.go,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.only(left: 10, bottom: 14),
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.only(left: 10, bottom: 14),
                 hintText: 'Enter a search',
                 hintStyle: TextStyle(
-                  color: Color.fromARGB(255, 143, 143, 143),
+                  color: normalTextColor,
                 ),
                 border: InputBorder.none,
               ),
-              style: const TextStyle(
-                color: Color.fromARGB(255, 143, 143, 143),
+              style: TextStyle(
+                color: normalTextColor,
               ),
               onSubmitted: (value) async {
                 log(searchKey);
@@ -84,9 +84,9 @@ class Home extends StatelessWidget {
           ),
         ),
         IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.search,
-              color: Color.fromARGB(255, 143, 143, 143),
+              color: normalTextColor,
             ),
             onPressed: () async {
               if (searchKey.isNotEmpty) {
@@ -106,6 +106,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     log('Home');
+    
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -130,17 +131,21 @@ class Home extends StatelessWidget {
                           child: VideosListView(videoListInfo: videoListInfo),
                         )
                       : SizedBox(
-                          height: height - 40,
-                          child: const Column(
+                          height: height - 88,
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
                                 Icons.subtitles_off,
                                 size: 100,
-                                color: Color.fromARGB(255, 143, 143, 143),
+                                color: normalTextColor,
                               ),
-                              Text('NoInformation'),
+                              Text(
+                                'No Video',
+                                style: TextStyle(color: normalTextColor),
+                              ),
+                              
                             ],
                           ),
                         );
