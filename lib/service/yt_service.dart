@@ -61,6 +61,7 @@ class YTService {
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       _nextPageToken = data['nextPageToken'] ?? '';
+      print('$_nextPageToken _nextPageToken');
       log("search Result : $data");
       List<dynamic> videosJson = data['items'];
 
@@ -99,7 +100,7 @@ class YTService {
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       String videoTitle = data['items'][0]['snippet']['title'];
-      if (data['items'][0]['snippet']['tags'].length > 0) {
+      if (data['items'][0]['snippet']['tags'] != null) {
         if (data['items'][0]['snippet']['tags'].length > 4) {
           for (int i = 0; i < 4; i++) {
             videoTitle += data['items'][0]['snippet']['tags'][i] + ' ';

@@ -15,19 +15,23 @@ class Home extends StatelessWidget {
 
   //キーワードで動画リストを検索の処理する
   Future<void> searchVideoItems(BuildContext context, String mode) async {
-    var cubit = context.read<VideoListCubit>();
+    VideoListCubit cubit = context.read<VideoListCubit>();
     switch (mode) {
       case 'URL':
         String tmpId = cubit.getVideoId(searchKey);
         log("Result ID : $tmpId");
         String videoTitle = await cubit.searchVideoDetail(tmpId);
         await cubit.searchVideo(videoTitle, 'URL');
+        
         List<YoutubeItem> searchedVideoItems = cubit.state.videoItems;
-
         int index = searchedVideoItems.indexWhere((video) => video.id == tmpId);
-        var tmpVideo = searchedVideoItems[0];
-        searchedVideoItems[0] = searchedVideoItems[index];
-        searchedVideoItems[index] = tmpVideo;
+        void searchResultOrder(
+            int index, List<YoutubeItem> searchedVideoItems) {
+          YoutubeItem tmpVideo = searchedVideoItems[0];
+          searchedVideoItems[0] = searchedVideoItems[index];
+          searchedVideoItems[index] = tmpVideo;
+        }
+        searchResultOrder(index, searchedVideoItems);
 
         VideoList(
             searchKey: videoTitle,
@@ -106,7 +110,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     log('Home');
-    
+
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -145,7 +149,6 @@ class Home extends StatelessWidget {
                                 'No Video',
                                 style: TextStyle(color: normalTextColor),
                               ),
-                              
                             ],
                           ),
                         );

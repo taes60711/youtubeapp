@@ -146,7 +146,7 @@ class VideosListView extends StatelessWidget {
                                     children: [
                                       SizedBox(
                                         height: 80,
-                                        width: 130,
+                                        width: 110,
                                         child: Center(
                                             child: ClipRRect(
                                           borderRadius:
@@ -158,7 +158,10 @@ class VideosListView extends StatelessWidget {
                                           ),
                                         )),
                                       ),
-                                      Text(videoItems[index].channelTitle)
+                                      Text(
+                                        videoItems[index].channelTitle,
+                                        overflow: TextOverflow.ellipsis,
+                                      )
                                     ],
                                   ),
                                 ),
@@ -205,4 +208,3 @@ class VideosListView extends StatelessWidget {
         : videolistView(null);
   }
 }
-
