@@ -1,17 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:youtubeapp/home.dart';
 import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/service/yt_service.dart';
 
 abstract class VideoListState {
   dynamic videoItems = [];
-  dynamic searchKey = '';
-  VideoListState({this.videoItems, this.searchKey});
+  VideoListState({this.videoItems});
 }
 
 class ListInitialState extends VideoListState {
-  ListInitialState(
-      {required List<YoutubeItem> videoItems, required String searchKey})
-      : super(videoItems: videoItems, searchKey: searchKey);
+  ListInitialState({required List<YoutubeItem> videoItems})
+      : super(videoItems: videoItems);
 }
 
 class LoadingState extends VideoListState {}
@@ -23,8 +22,8 @@ class AddLoadingState extends VideoListState {
 
 class SearchSuccesState extends VideoListState {
   SearchSuccesState(
-      {required List<YoutubeItem> videoItems, required String searchKey})
-      : super(videoItems: videoItems, searchKey: searchKey);
+      {required List<YoutubeItem> videoItems, required String searchKeyWord})
+      : super(videoItems: videoItems);
 }
 
 class SearchErrorState extends VideoListState {
@@ -33,53 +32,53 @@ class SearchErrorState extends VideoListState {
 }
 
 class VideoListCubit extends Cubit<VideoListState> {
-  VideoListCubit() : super(ListInitialState(videoItems: [], searchKey: ''));
+  String? searchKeyWord = '';
+  VideoListCubit({this.searchKeyWord})
+      : super(ListInitialState(videoItems: []));
   final YTService _ytService = YTService.instance;
 
-  Future<void> searchVideo(String keyword, String mode) async {
-    emit(LoadingState());
-    try {
-      List<YoutubeItem> searchResult = await _ytService.searchVideosFromKeyWord(
-          keyword: keyword, mode: mode);
-      emit(SearchSuccesState(videoItems: searchResult, searchKey: keyword));
-    } catch (error) {
-      emit(SearchErrorState(message: error.toString()));
-      rethrow;
-    }
+  void searchKeyWordChange(String value) {
+    searchKeyWord = value;
   }
 
-  Future<void> addListVideo(
-      List<YoutubeItem> videoItems, String keyword) async {
-    emit(AddLoadingState(videoItems: videoItems));
-    try {
-      List<YoutubeItem> searchResult = await _ytService.searchVideosFromKeyWord(
-          keyword: keyword, mode: 'keyWord');
-      videoItems.addAll(searchResult);
-      emit(SearchSuccesState(videoItems: videoItems, searchKey: keyword));
-    } catch (error) {
-      emit(SearchErrorState(message: error.toString()));
-      rethrow;
+  Future<void> searchVideo(String searchKeyWord, SearchType type,
+      {List<YoutubeItem>? videoItems}) async {
+    doSearchORAddVideos(void emits,
+        {List<YoutubeItem>? videoItems, String? videoId}) async {
+      emits;
+      try {
+        List<YoutubeItem> searchResult =
+            await _ytService.searchVideosFromKeyWord(keyword: searchKeyWord);
+        List<YoutubeItem> returnVideoItems = (videoItems ?? [])
+          ..addAll(searchResult);
+        if (videoId != null) {
+          int index =
+              returnVideoItems.indexWhere((video) => video.id == videoId);
+          YoutubeItem tmpVideo = returnVideoItems[0];
+          returnVideoItems[0] = returnVideoItems[index];
+          returnVideoItems[index] = tmpVideo;
+        }
+        emit(SearchSuccesState(
+            videoItems: returnVideoItems, searchKeyWord: searchKeyWord));
+      } catch (error) {
+        emit(SearchErrorState(message: error.toString()));
+        rethrow;
+      }
     }
-  }
 
-  Future<String> searchVideoDetail(String videoId) async {
-    emit(LoadingState());
-    try {
-      var videoTitle = await _ytService.searchVideoDetail(videoId: videoId);
-      return videoTitle;
-    } catch (error) {
-      emit(SearchErrorState(message: error.toString()));
-      rethrow;
-    }
-  }
-
-  String getVideoId(String searchKey) {
-    try {
-      var videoId = _ytService.getVideoID(searchKey);
-      return videoId;
-    } catch (error) {
-      emit(SearchErrorState(message: error.toString()));
-      rethrow;
+    if (videoItems != null) {
+      //既に検索されたデータ含めて，ビデオリストに追加する
+      doSearchORAddVideos(emit(AddLoadingState(videoItems: videoItems)),
+          videoItems: videoItems);
+    } else {
+      String? videoId;
+      if (type == SearchType.url) {
+        //URLで検索したらビデオの細かい資料取得する，例：タイトル，タグ
+        videoId = _ytService.getVideoID(searchKeyWord);
+        searchKeyWord = await _ytService.searchVideoDetail(videoId: videoId);
+      }
+      //ホームで検索際に，既に検索されたデータ要らなくてデータ取得する
+      doSearchORAddVideos(emit(LoadingState()), videoId: videoId);
     }
   }
 }

@@ -1,13 +1,13 @@
-import 'package:youtubeapp/models/video_model.dart';
+// import 'package:youtubeapp/models/video_model.dart';
 
-class VideoList {
-  YoutubeItem? selectedVideo;
-  String searchKey;
-  String? routerPage;
+// class VideoList {
+//   YoutubeItem? selectedVideo;
+//   String searchKey;
+//   String? routerPage;
 
-  VideoList({
-    this.selectedVideo,
-    required this.searchKey,
-    this.routerPage,
-  });
-}
+//   VideoList({
+//     this.selectedVideo,
+//     required this.searchKey,
+//     this.routerPage,
+//   });
+// }
