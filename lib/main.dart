@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/channel.dart';
 import 'package:youtubeapp/components/playerPage/player_page.dart';
 import 'package:youtubeapp/home.dart';
+import 'package:youtubeapp/states/channel_list_state.dart';
 import 'package:youtubeapp/states/video_list_state.dart';
-
 
 void main() {
   runApp(MyApp());
@@ -32,8 +32,15 @@ class MyApp extends StatelessWidget {
               value: _videoListCubit,
               child: Home(),
             ),
-        '/channel': (BuildContext context) => BlocProvider.value(
-              value: _videoListCubit,
+        '/channel': (BuildContext context) => MultiBlocProvider(
+              providers: [
+                BlocProvider.value(
+                  value: _videoListCubit,
+                ),
+                BlocProvider<ChannelListCubit>(
+                  create: (BuildContext context) => ChannelListCubit(),
+                ),
+              ],
               child: Channel(),
             ),
         '/playerPage': (BuildContext context) => BlocProvider.value(

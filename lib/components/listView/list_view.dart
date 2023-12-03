@@ -276,7 +276,9 @@ class VideosListView extends StatelessWidget {
                                         const Color.fromARGB(255, 68, 86, 147),
                                     elevation: 0,
                                   ),
-                                  onPressed: () async {},
+                                  onPressed: () async {
+                                    Navigator.of(context).pushNamed('/channel');
+                                  },
                                   child: Row(
                                     children: [
                                       SizedBox(
