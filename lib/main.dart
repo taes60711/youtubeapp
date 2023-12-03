@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
             ),
         '/playerPage': (BuildContext context) => BlocProvider.value(
               value: _videoListCubit,
-              child: PlayerPage(),
+              child: const PlayerPage(),
             ),
       },
     );
