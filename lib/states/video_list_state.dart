@@ -33,7 +33,8 @@ class SearchErrorState extends VideoListState {
 
 class VideoListCubit extends Cubit<VideoListState> {
   String? searchKeyWord = '';
-  VideoListCubit({this.searchKeyWord})
+  YoutubeItem? selectedItem ;
+  VideoListCubit({this.searchKeyWord,this.selectedItem})
       : super(ListInitialState(videoItems: []));
   final YTService _ytService = YTService.instance;
 

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/channel.dart';
 import 'package:youtubeapp/components/playerPage/player_page.dart';
 import 'package:youtubeapp/home.dart';
-import 'package:youtubeapp/states/videoListState.dart';
+import 'package:youtubeapp/states/video_list_state.dart';
 
 
 void main() {

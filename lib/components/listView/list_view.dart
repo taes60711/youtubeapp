@@ -214,7 +214,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/models/video_model.dart';
-import 'package:youtubeapp/states/videoListState.dart';
+import 'package:youtubeapp/states/video_list_state.dart';
 import 'package:youtubeapp/utilities/style_config.dart';
 
 class VideosListView extends StatelessWidget {
@@ -222,6 +222,7 @@ class VideosListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String inRoutePath = ModalRoute.of(context)!.settings.name ?? '/';
     return BlocBuilder<VideoListCubit, VideoListState>(
       builder: ((context, state) {
         List<YoutubeItem> ytItems =
@@ -229,63 +230,119 @@ class VideosListView extends StatelessWidget {
         return ListView.builder(
             itemCount: ytItems.length,
             itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 1, left: 10, right: 10),
-                child: Container(
-                  padding: const EdgeInsets.only(bottom: 5),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                          color: normalTextColor as Color, width: .5),
-                    ),
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0)),
-                      padding: const EdgeInsets.symmetric(horizontal: 0),
-                      backgroundColor: normalBgColor,
-                      elevation: 0,
-                    ),
-                    onPressed: (() {}),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          height: 80,
-                          width: 130,
-                          child: Image(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(ytItems[index].thumbnailUrl),
-                          ),
+              return ytItems[index].kind == 'video'
+                  ? VideoItem(ytItems, inRoutePath, index)
+                  : Container(
+                      margin:
+                          const EdgeInsets.only(left: 10, right: 10, bottom: 1),
+                      height: 80,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          backgroundColor:
+                              const Color.fromARGB(255, 68, 86, 147),
+                          elevation: 0,
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: Text(
-                                    ytItems[index].title,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                        onPressed: () async {},
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              height: 80,
+                              width: 110,
+                              child: Center(
+                                  child: ClipRRect(
+                                borderRadius: BorderRadius.circular(40),
+                                child: Image(
+                                  fit: BoxFit.cover,
+                                  image:
+                                      NetworkImage(ytItems[index].thumbnailUrl),
                                 ),
-                                Text(
-                                  ytItems[index].channelTitle,
-                                  overflow: TextOverflow.ellipsis,
-                                )
-                              ],
+                              )),
                             ),
-                          ),
+                            Text(
+                              ytItems[index].channelTitle,
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
+                      ),
+                    );
             });
       }),
     );
+  }
+}
+
+class VideoItem extends StatelessWidget {
+  const VideoItem(this.ytItems, this.inRoutePath, this.index, {super.key});
+  final List<YoutubeItem> ytItems;
+  final String inRoutePath;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(left: 10, right: 10, bottom: 1),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: normalTextColor as Color, width: .5),
+        ),
+      ),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+          padding: const EdgeInsets.symmetric(horizontal: 0),
+          backgroundColor: normalBgColor,
+          elevation: 0,
+        ),
+        onPressed: () {
+          if (inRoutePath == '/') {
+            Navigator.of(context).pushNamed('/playerPage', arguments: {
+              'selectedVideo': ytItems[index],
+              'selectedIndex': index
+            });
+          }
+        },
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 80,
+              width: 130,
+              child: Image(
+                fit: BoxFit.cover,
+                image: NetworkImage(ytItems[index].thumbnailUrl),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8, top: 5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Text(
+                        ytItems[index].title,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    ),
+                    Text(
+                      ytItems[index].channelTitle,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 12, color: normalTextColor),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+    ;
   }
 }

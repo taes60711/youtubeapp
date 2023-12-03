@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/components/listView/list_view.dart';
 import 'package:youtubeapp/components/loading.dart';
 import 'package:youtubeapp/models/video_model.dart';
-import 'package:youtubeapp/states/videoListState.dart';
+import 'package:youtubeapp/states/video_list_state.dart';
 import 'package:youtubeapp/utilities/screen_size.dart';
 import 'package:youtubeapp/utilities/style_config.dart';
 
@@ -135,7 +135,7 @@ class Home extends StatelessWidget {
                   List<YoutubeItem> ytItems =
                       context.watch<VideoListCubit>().state.videoItems;
                   return ytItems.isNotEmpty
-                      ? const VideosListView()
+                      ? VideosListView()
                       : NoVideosView(bgHeight);
                 }
               }),
@@ -146,5 +146,3 @@ class Home extends StatelessWidget {
     );
   }
 }
-
-
