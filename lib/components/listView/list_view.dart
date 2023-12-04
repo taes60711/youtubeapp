@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/components/loading.dart';
@@ -6,6 +8,7 @@ import 'package:youtubeapp/models/video_model.dart';
 import 'package:youtubeapp/states/channel_list_state.dart' as channel;
 import 'package:youtubeapp/states/video_list_state.dart' as normal;
 import 'package:youtubeapp/utilities/style_config.dart';
+import 'package:html_unescape/html_unescape.dart';
 
 class VideosListView extends StatelessWidget {
   final List<YoutubeItem> ytItems;
@@ -84,10 +87,10 @@ class VideosListView extends StatelessWidget {
                               elevation: 0,
                             ),
                             onPressed: () async {
-                              Navigator.of(context)
-                                  .pushNamed('/channel', arguments: {
-                                'selectedChannel': ytItems[index].id,
-                              });
+                              Navigator.of(context).pushNamed('/channel',
+                                  arguments: {
+                                    'selectedChannel': ytItems[index].id
+                                  });
                             },
                             child: Row(
                               children: [
@@ -165,13 +168,15 @@ class VideosListView extends StatelessWidget {
                                           padding:
                                               const EdgeInsets.only(bottom: 10),
                                           child: Text(
-                                            ytItems[index].title,
+                                            HtmlUnescape()
+                                                .convert(ytItems[index].title),
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 2,
                                           ),
                                         ),
                                         Text(
-                                          ytItems[index].channelTitle,
+                                          HtmlUnescape().convert(
+                                              ytItems[index].channelTitle),
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                               fontSize: 12,
