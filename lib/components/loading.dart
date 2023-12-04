@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:youtubeapp/utilities/style_config.dart';
 
 class LoadingWidget extends StatelessWidget {
-  const LoadingWidget({super.key});
+  final double? circularSize;
+  final double? strokeWidth;
+  final Color? backgroundColor;
+  final Color? strokeColor;
+
+  const LoadingWidget(
+      {super.key,
+      this.circularSize,
+      this.strokeWidth,
+      this.backgroundColor,
+      this.strokeColor});
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(8.0),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
       child: SizedBox(
-        height: 50,
-        width: 50,
+        height: circularSize ?? 50,
+        width: circularSize ?? 50,
         child: CircularProgressIndicator(
-          strokeWidth: 5,
-          backgroundColor: Colors.black26,
-          color: Colors.black26,
+          strokeWidth: strokeWidth ?? 5,
+          backgroundColor: backgroundColor ?? normalBgColor,
+          color: strokeColor ?? normalTextColor,
         ),
       ),
     );

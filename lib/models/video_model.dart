@@ -1,30 +1,33 @@
-class YoutubeVideo {
-  final String kind;
-  final String id;
-  final String title;
-  final String thumbnailUrl;
-  final String channelTitle;
-  final String publishedAt;
 
-  YoutubeVideo({
-    required this.kind,
-    required this.id,
-    required this.title,
-    required this.thumbnailUrl,
-    required this.channelTitle,
-    required this.publishedAt,
-  });
 
-  factory YoutubeVideo.fromMap(Map<String, dynamic> json, String kind) {
-    String id;
+class YoutubeItem  {
+  final String? kind;
+  late final String? id;
+  String title;
+  String thumbnailUrl;
+  String channelTitle;
+  String publishedAt;
+
+  YoutubeItem(
+      {this.kind,
+      this.id,
+      required this.title,
+      required this.thumbnailUrl,
+      required this.channelTitle,
+      required this.publishedAt});
+
+  factory YoutubeItem.fromMap(Map<String, dynamic> json, String kind) {
+    String id = '';
+
     if (kind == 'video') {
       id = json['id']['videoId'];
-    } else if (kind == 'channelVideo') {
-      id = json['contentDetails']['videoId'];
-    } else {
+    } else if (kind == 'channel') {
       id = json['id']['channelId'];
+    } else if (kind == 'channel_video') {
+      id = json['contentDetails']['videoId'];
     }
-    return YoutubeVideo(
+
+    return YoutubeItem(
       kind: kind,
       id: id,
       title: json['snippet']['title'],
@@ -34,3 +37,4 @@ class YoutubeVideo {
     );
   }
 }
+
