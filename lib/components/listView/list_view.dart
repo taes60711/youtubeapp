@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/components/loading.dart';
@@ -29,17 +27,15 @@ class VideosListView extends StatelessWidget {
         DraggableScrollableController();
 
     Widget loadingInstance(String preRoutePath) {
+      dynamic condition;
       if (preRoutePath == '/') {
-        return (context.read<normal.VideoListCubit>().state
-                is normal.AddLoadingState)
-            ? const LoadingWidget()
-            : Container();
+        condition = (context.read<normal.VideoListCubit>().state
+            is normal.AddLoadingState);
       } else {
-        return (context.read<channel.ChannelListCubit>().state
-                is channel.AddLoadingState)
-            ? const LoadingWidget()
-            : Container();
+        condition = (context.read<channel.ChannelListCubit>().state
+            is channel.AddLoadingState);
       }
+      return condition ? const LoadingWidget() : Container();
     }
 
     Widget videoList({ScrollController? scrollController}) {
