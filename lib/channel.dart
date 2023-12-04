@@ -19,7 +19,6 @@ class Channel extends StatelessWidget {
         if (state.videoItems.isNotEmpty) {
           List<YoutubeItem> ytItems =
               context.watch<ChannelListCubit>().state.videoItems;
-              print('selectedIndex Channel: $ytItems');
           return Scaffold(
             backgroundColor: normalBgColor,
             body: VideosListView(

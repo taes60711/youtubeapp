@@ -1,26 +1,20 @@
-abstract class Item {
+
+
+class YoutubeItem  {
+  final String? kind;
+  late final String? id;
   String title;
   String thumbnailUrl;
   String channelTitle;
   String publishedAt;
-  Item(
-      {required this.title,
-      required this.thumbnailUrl,
-      required this.channelTitle,
-      required this.publishedAt});
-}
-
-class YoutubeItem extends Item {
-  final String? kind;
-  late final String? id;
 
   YoutubeItem(
       {this.kind,
       this.id,
-      required super.title,
-      required super.thumbnailUrl,
-      required super.channelTitle,
-      required super.publishedAt});
+      required this.title,
+      required this.thumbnailUrl,
+      required this.channelTitle,
+      required this.publishedAt});
 
   factory YoutubeItem.fromMap(Map<String, dynamic> json, String kind) {
     String id = '';

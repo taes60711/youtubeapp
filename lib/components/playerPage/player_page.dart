@@ -20,7 +20,6 @@ class PlayerPage extends StatelessWidget {
         ? context.watch<VideoListCubit>().state.videoItems
         : context.watch<ChannelListCubit>().state.videoItems;
     
-  print('selectedIndex ChannelListCubit: ${context.watch<ChannelListCubit>().state.videoItems} VideoListCubit : ${context.watch<VideoListCubit>().state.videoItems}');
     late YoutubePlayerController controller = YoutubePlayerController(
       initialVideoId: ytItems[startIndex].id as String,
       flags: const YoutubePlayerFlags(
