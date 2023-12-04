@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/components/listView/list_view.dart';
 import 'package:youtubeapp/components/playerPage/PlayerSubView/download_view.dart';
 import 'package:youtubeapp/models/video_model.dart';
-import 'package:youtubeapp/states/video_list_state.dart';
 import 'package:youtubeapp/utilities/style_config.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -13,20 +11,19 @@ class PlayerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     dynamic args = ModalRoute.of(context)!.settings.arguments;
-    YoutubeItem selectedVideo = args['selectedVideo'];
+    List<YoutubeItem> ytItems = args['ytItems'];
     int startIndex = args['selectedIndex'];
     late YoutubePlayerController controller = YoutubePlayerController(
-      initialVideoId: selectedVideo.id as String,
+      initialVideoId: ytItems[startIndex].id as String,
       flags: const YoutubePlayerFlags(
         autoPlay: true,
         mute: false,
       ),
     );
-    List<YoutubeItem> ytItems =
-        context.watch<VideoListCubit>().state.videoItems;
 
-    void videoOnChange(YoutubeItem chnagedVideo) {
-      controller.load(chnagedVideo.id as String);
+    void videoOnChange(int index ) {
+      controller.load(ytItems[index].id as String);
+      startIndex = index;
     }
 
     return SafeArea(
@@ -47,11 +44,12 @@ class PlayerPage extends StatelessWidget {
                 children: [
                   Center(
                     child: DownloadView(
-                      selectedVideo: selectedVideo,
+                      selectedVideo: ytItems[startIndex],
                     ),
                   ),
                   VideosListView(
                     selectedVideoChange: videoOnChange,
+                    ytItems: ytItems,
                   ),
                 ],
               ),

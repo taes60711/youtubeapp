@@ -44,22 +44,3 @@ class YoutubeItem extends Item {
   }
 }
 
-// class ChannelItem extends Item {
-//   final String? channelVideoId;
-//   ChannelItem(
-//       {this.channelVideoId,
-//       required super.title,
-//       required super.thumbnailUrl,
-//       required super.channelTitle,
-//       required super.publishedAt});
-
-//   factory ChannelItem.fromMap(Map<String, dynamic> json) {
-//     return ChannelItem(
-//       channelVideoId: json['contentDetails']['videoId'],
-//       title: json['snippet']['title'],
-//       thumbnailUrl: json['snippet']['thumbnails']['high']['url'],
-//       channelTitle: json['snippet']['channelTitle'],
-//       publishedAt: json['snippet']['publishedAt'],
-//     );
-//   }
-// }
