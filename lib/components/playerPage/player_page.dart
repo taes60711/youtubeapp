@@ -16,10 +16,11 @@ class PlayerPage extends StatelessWidget {
     dynamic args = ModalRoute.of(context)!.settings.arguments;
     int startIndex = args['selectedIndex'];
     String preRoutePath = args['preRoutePath'];
-    List<YoutubeItem> ytItems = preRoutePath == '/'
+    List<YoutubeItem> ytItems = (preRoutePath == '/')
         ? context.watch<VideoListCubit>().state.videoItems
         : context.watch<ChannelListCubit>().state.videoItems;
-        
+    
+  print('selectedIndex ChannelListCubit: ${context.watch<ChannelListCubit>().state.videoItems} VideoListCubit : ${context.watch<VideoListCubit>().state.videoItems}');
     late YoutubePlayerController controller = YoutubePlayerController(
       initialVideoId: ytItems[startIndex].id as String,
       flags: const YoutubePlayerFlags(

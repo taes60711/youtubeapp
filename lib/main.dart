@@ -12,7 +12,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   final VideoListCubit _videoListCubit = VideoListCubit();
-
+final ChannelListCubit _channelListCubit = ChannelListCubit();
   MyApp({super.key});
 
   @override
@@ -37,8 +37,8 @@ class MyApp extends StatelessWidget {
                 BlocProvider.value(
                   value: _videoListCubit,
                 ),
-                BlocProvider<ChannelListCubit>(
-                  create: (BuildContext context) => ChannelListCubit(),
+                BlocProvider.value(
+                  value: _channelListCubit,
                 ),
               ],
               child: Channel(),
@@ -48,8 +48,8 @@ class MyApp extends StatelessWidget {
                 BlocProvider.value(
                   value: _videoListCubit,
                 ),
-                BlocProvider<ChannelListCubit>(
-                  create: (BuildContext context) => ChannelListCubit(),
+                BlocProvider.value(
+                  value: _channelListCubit,
                 ),
               ],
               child: PlayerPage(),

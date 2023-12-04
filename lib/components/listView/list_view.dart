@@ -209,6 +209,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/home.dart';
 import 'package:youtubeapp/models/video_model.dart';
+import 'package:youtubeapp/states/channel_list_state.dart';
 import 'package:youtubeapp/states/video_list_state.dart';
 import 'package:youtubeapp/utilities/style_config.dart';
 
@@ -241,8 +242,11 @@ class VideosListView extends StatelessWidget {
                 String searchedWord = cubit.searchKeyWord as String;
                 cubit.searchVideo(searchedWord, SearchType.normal,
                     videoItems: ytItems);
-              }else if (preRoutePath == '/channel') {
-                 print('inRoutePath $inRoutePath preRoutePath: $preRoutePath');
+              } else if (preRoutePath == '/channel') {
+                print('inRoutePath $inRoutePath preRoutePath: $preRoutePath');
+                ChannelListCubit cubit = context.read<ChannelListCubit>();
+                String channelId = cubit.channelId as String;
+                cubit.searchVideo(channelId, videoItems: ytItems);
               }
             }
           }
@@ -313,6 +317,7 @@ class VideosListView extends StatelessWidget {
                         if (inRoutePath == '/playerPage') {
                           selectedVideoChange!(index);
                         } else {
+                          print('selectedIndex $index');
                           Navigator.of(context)
                               .pushNamed('/playerPage', arguments: {
                             'selectedIndex': index,
