@@ -61,7 +61,6 @@ class YTService {
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       _nextPageToken = data['nextPageToken'] ?? '';
-      print('$_nextPageToken _nextPageToken');
       log("search Result : $data");
       List<dynamic> videosJson = data['items'];
 
@@ -120,7 +119,7 @@ class YTService {
     }
   }
 
-  Future<List<ChannelItem>> searchVideosFromChannel(
+  Future<List<YoutubeItem>> searchVideosFromChannel(
       {required String channelId}) async {
     String playlistId =
         '${channelId.substring(0, 1)}U${channelId.substring(2)}';
@@ -146,9 +145,9 @@ class YTService {
 
       _channelNextPageToken = data['nextPageToken'] ?? '';
       log("search Result : $data");
-      List<ChannelItem> videos = [];
+      List<YoutubeItem> videos = [];
       data['items'].forEach((json) {
-        videos.add(ChannelItem.fromMap(json));
+        videos.add(YoutubeItem.fromMap(json, 'channel_video'));
       });
 
       return videos;

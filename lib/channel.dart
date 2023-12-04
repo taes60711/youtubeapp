@@ -126,12 +126,100 @@
 // }
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:youtubeapp/components/loading.dart';
+import 'package:youtubeapp/states/channel_list_state.dart';
+import 'package:youtubeapp/utilities/style_config.dart';
 
 class Channel extends StatelessWidget {
   const Channel({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    dynamic args = ModalRoute.of(context)!.settings.arguments;
+    String selectedChannelId = args['selectedChannel'];
+
+    return BlocBuilder<ChannelListCubit, ChannelListState>(
+      builder: ((context, state) {
+        if (state.videoItems.isNotEmpty) {
+          return Scaffold(
+              backgroundColor: normalBgColor,
+              body: ListView.builder(
+                  itemCount: state.videoItems.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin:
+                          const EdgeInsets.only(left: 10, right: 10, bottom: 1),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                              color: normalTextColor as Color, width: .5),
+                        ),
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0)),
+                          padding: const EdgeInsets.symmetric(horizontal: 0),
+                          backgroundColor: normalBgColor,
+                          elevation: 0,
+                        ),
+                        onPressed: () {},
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 80,
+                              width: 130,
+                              child: Image(
+                                fit: BoxFit.cover,
+                                image: NetworkImage(
+                                    state.videoItems[index].thumbnailUrl),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8, top: 5),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 10),
+                                      child: Text(
+                                        state.videoItems[index].title,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                      ),
+                                    ),
+                                    Text(
+                                      state.videoItems[index].channelTitle,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: 12, color: normalTextColor),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  }));
+        } else {
+          context.read<ChannelListCubit>().searchVideo(selectedChannelId);
+          return Scaffold(
+            backgroundColor: normalBgColor,
+            body: const Center(
+              child: LoadingWidget(
+                circularSize: 70,
+                strokeWidth: 10,
+              ),
+            ),
+          );
+        }
+      }),
+    );
   }
 }
