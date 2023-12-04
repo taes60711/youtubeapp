@@ -20,6 +20,7 @@ class Channel extends StatelessWidget {
             backgroundColor: normalBgColor,
             body: VideosListView(
               ytItems: state.videoItems,
+              preRoutePath: '/channel',
             ),
           );
         } else {

@@ -43,9 +43,16 @@ class MyApp extends StatelessWidget {
               ],
               child: Channel(),
             ),
-        '/playerPage': (BuildContext context) => BlocProvider.value(
-              value: _videoListCubit,
-              child: const PlayerPage(),
+        '/playerPage': (BuildContext context) => MultiBlocProvider(
+              providers: [
+                BlocProvider.value(
+                  value: _videoListCubit,
+                ),
+                BlocProvider<ChannelListCubit>(
+                  create: (BuildContext context) => ChannelListCubit(),
+                ),
+              ],
+              child: PlayerPage(),
             ),
       },
     );

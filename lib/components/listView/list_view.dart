@@ -205,7 +205,6 @@
 //     );
 //   }
 // }
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtubeapp/home.dart';
@@ -216,12 +215,18 @@ import 'package:youtubeapp/utilities/style_config.dart';
 class VideosListView extends StatelessWidget {
   final List<YoutubeItem> ytItems;
   final Function? selectedVideoChange;
+  final String? preRoutePath;
+
   const VideosListView(
-      {super.key, required this.ytItems, this.selectedVideoChange});
+      {super.key,
+      required this.ytItems,
+      this.selectedVideoChange,
+      this.preRoutePath});
 
   @override
   Widget build(BuildContext context) {
-    final String inRoutePath = ModalRoute.of(context)!.settings.name ?? '/';
+    String inRoutePath = ModalRoute.of(context)!.settings.name ?? '/';
+    // print('inRoutePath $inRoutePath preRoutePath: $preRoutePath');
 
     Widget videoList({ScrollController? scrollController}) {
       return NotificationListener<ScrollNotification>(
@@ -230,10 +235,15 @@ class VideosListView extends StatelessWidget {
             final before = scrollNotification.metrics.extentBefore;
             final max = scrollNotification.metrics.maxScrollExtent;
             if (before == max) {
-              VideoListCubit cubit = context.read<VideoListCubit>();
-              String searchedWord = cubit.searchKeyWord as String;
-              cubit.searchVideo(searchedWord, SearchType.normal,
-                  videoItems: ytItems);
+              if (preRoutePath == '/') {
+                print('inRoutePath $inRoutePath preRoutePath: $preRoutePath');
+                VideoListCubit cubit = context.read<VideoListCubit>();
+                String searchedWord = cubit.searchKeyWord as String;
+                cubit.searchVideo(searchedWord, SearchType.normal,
+                    videoItems: ytItems);
+              }else if (preRoutePath == '/channel') {
+                 print('inRoutePath $inRoutePath preRoutePath: $preRoutePath');
+              }
             }
           }
           return false;
@@ -303,11 +313,11 @@ class VideosListView extends StatelessWidget {
                         if (inRoutePath == '/playerPage') {
                           selectedVideoChange!(index);
                         } else {
-                          Navigator.of(context).pushNamed('/playerPage',
-                              arguments: {
-                                'ytItems': ytItems,
-                                'selectedIndex': index
-                              });
+                          Navigator.of(context)
+                              .pushNamed('/playerPage', arguments: {
+                            'selectedIndex': index,
+                            'preRoutePath': inRoutePath,
+                          });
                         }
                       },
                       child: Row(
