@@ -136,7 +136,7 @@ class Home extends StatelessWidget {
                       context.watch<VideoListCubit>().state.videoItems;
                   return ytItems.isNotEmpty
                       ? VideosListView(ytItems: ytItems,preRoutePath: '/',)
-                      : NoVideosView(bgHeight);
+                      : Center(child: NoVideosView(bgHeight));
                 }
               }),
             ),
